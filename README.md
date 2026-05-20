@@ -23,7 +23,7 @@
 
 ## 环境要求
 
-- Ubuntu 24.04（推荐）
+- Ubuntu 24.04
 - Python 3.11+
 - Ansible 2.16+
 - Flask 3.x
