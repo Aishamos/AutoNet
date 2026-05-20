@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}NetAuto - 配置下发{% endblock %}
+
+{% block content %}
+<h4 class="page-title">批量配置下发</h4>
+
+<div class="card p-4">
+    <div class="mb-4 pb-3 border-bottom">
+        <h6 class="fw-bold mb-3">1. 选择配置模板</h6>
+        <div class="d-flex gap-3 align-items-center">
+            <select class="form-select form-select-sm w-50" id="template-select" onchange="renderFields()">
+                <option value="">加载中...</option>
+            </select>
+            <button class="btn btn-outline-secondary btn-sm" onclick="loadMeta()">刷新模板列表</button>
+        </div>
+        <div id="dynamic-fields" class="mt-3 row g-2"></div>
+    </div>
+
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-bold m-0">2. 选择下发设备</h6>
+            <div>
+                <button class="btn btn-sm btn-link text-decoration-none" onclick="toggleChecks(true)">全选</button> |
+                <button class="btn btn-sm btn-link text-decoration-none" onclick="toggleChecks('invert')">反选</button>
+            </div>
+        </div>
+        <input type="text" class="form-control form-control-sm mb-2" id="device-search" placeholder="搜索设备..." oninput="filterDevices()" style="max-width: 200px; height: 28px; font-size: 12px;">
+        <div id="device-checkboxes" class="p-3 border rounded bg-light d-flex flex-wrap gap-3" style="max-height: 200px; overflow-y: auto;"></div>
+    </div>
+
+    <div>
+        <button class="btn btn-primary" id="btn-deploy" onclick="executeDeploy()">执行下发</button>
+    </div>
+</div>
+
+<div class="card p-0">
+    <div class="card-header bg-white fw-bold border-bottom">下发结果展示区</div>
+    <div style="max-height: 320px; overflow-y: auto;">
+        <table class="table mb-0" style="font-size: 16px;">
+            <thead class="sticky-header"><tr><th class="ps-4">目标设备</th><th>配置模板</th><th>执行状态</th><th>执行时间</th></tr></thead>
+            <tbody id="result-body">
+                <tr><td colspan="4" class="text-center text-muted py-3">暂无执行记录</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+    let metaData = {};
+
+    document.addEventListener("DOMContentLoaded", () => { loadMeta(); renderDeployHistory(); setInterval(loadDeviceStatus, 5000); });
+
+    function loadMeta() {
+        Promise.all([
+            fetch('/api/deploy/meta').then(res => res.json()),
+            fetch('/api/status/devices').then(res => res.json())
+        ]).then(([metaRes, statusRes]) => {
+            metaData = metaRes;
+            const deviceStatus = statusRes.data || {};
+            const tplSelect = document.getElementById('template-select');
+            tplSelect.innerHTML = '<option value="" disabled selected>请选择要下发的 .j2 模板</option>';
+            metaRes.templates.forEach(t => tplSelect.add(new Option(t.filename, t.filename)));
+
+            const box = document.getElementById('device-checkboxes');
+            box.innerHTML = '';
+            metaRes.devices.forEach(d => {
+                if (d.alias === 'all') return;
+                const isOnline = deviceStatus[d.alias] === true;
+                const disabled = !isOnline;
+                const labelStyle = isOnline ? '' : 'color: #999; cursor: not-allowed;';
+                box.innerHTML += `
+                    <div class="form-check" style="${disabled ? 'opacity: 0.8;' : ''}">
+                        <input class="form-check-input dev-check" type="checkbox" value="${d.alias}" id="chk_${d.alias}" ${disabled ? 'disabled' : ''}>
+                        <label class="form-check-label" for="chk_${d.alias}" style="${labelStyle}">
+                            ${d.alias} ${isOnline ? '' : '<span class="badge bg-secondary" style="font-size:10px;">离线</span>'}
+                        </label>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    function loadDeviceStatus() {
+        fetch('/api/status/devices').then(res => res.json()).then(res => {
+            updateDeviceStatusUI(res.data || {}, '#device-checkboxes', '.dev-check');
+        });
+    }
+
+    function toggleChecks(state) {
+        document.querySelectorAll('.dev-check:not(:disabled)').forEach(chk => {
+            chk.checked = state === 'invert' ? !chk.checked : state;
+        });
+    }
+
+    function filterDevices() {
+        const keyword = document.getElementById('device-search').value.toLowerCase();
+        document.querySelectorAll('#device-checkboxes .form-check').forEach(el => {
+            const alias = el.querySelector('label').textContent.toLowerCase();
+            el.style.display = alias.includes(keyword) ? '' : 'none';
+        });
+    }
+
+    function renderDeployHistory() {
+        fetch('/api/logs').then(res => res.json()).then(res => {
+            const logs = (res.data || []).filter(l => l.action.includes('下发'));
+            const tbody = document.getElementById('result-body');
+            if (logs.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">暂无执行记录</td></tr>'; return; }
+            tbody.innerHTML = logs.slice(0, 10).flatMap(l => {
+                const isSuccess = l.result.includes('成功');
+                const match = l.action.match(/下发 (.+?) 模板 (.+)/);
+                const devicesStr = match ? match[1] : l.action;
+                const tpl = match ? match[2] : '-';
+                const badge = `<span class="badge ${isSuccess ? 'bg-success' : 'bg-danger'}">${l.result}</span>`;
+                const deviceList = devicesStr.split(',');
+                return deviceList.map(d => `<tr>
+                    <td class="ps-4 fw-bold">${d.trim()}</td>
+                    <td>${tpl}</td>
+                    <td>${badge}</td>
+                    <td class="text-muted">${l.time}</td>
+                </tr>`);
+            }).join('');
+        });
+    }
+
+    function renderFields() {
+        const selected = document.getElementById('template-select').value;
+        const container = document.getElementById('dynamic-fields');
+        container.innerHTML = '';
+        const tplObj = metaData.templates.find(t => t.filename === selected);
+        if (tplObj && tplObj.fields.length > 0) {
+            tplObj.fields.forEach(f => {
+                container.innerHTML += `
+                    <div class="col-md-3">
+                        <label class="form-label text-secondary" style="font-size: 12px;">${f.label}</label>
+                        <input type="${f.type}" class="form-control form-control-sm var-input" data-key="${f.name}" required>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    function executeDeploy() {
+        const template = document.getElementById('template-select').value;
+        if(!template) return alert("请先选择模板！");
+        let targets = [];
+        document.querySelectorAll('.dev-check:checked').forEach(c => targets.push(c.value));
+        if (targets.length === 0) return alert("请至少选择一台设备！");
+        let varsDict = {};
+        let inputs = document.querySelectorAll('.var-input');
+        for (let input of inputs) {
+            if(!input.value) return alert("请填写完整的模板参数！");
+            varsDict[input.getAttribute('data-key')] = input.value;
+        }
+
+        const btn = document.getElementById('btn-deploy');
+        btn.disabled = true; btn.innerText = "下发执行中...";
+        const targetStr = targets.join(',');
+
+        fetch('/api/deploy/run', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ target: targetStr, template: template, vars: varsDict })
+        }).then(res => res.json()).then(res => {
+            const deviceResults = res.results || {};
+            const isSuccess = res.status === 'success';
+            logAction(`下发 ${targetStr} 模板 ${template}`, isSuccess ? '成功' : '失败');
+
+            const tbody = document.getElementById('result-body');
+            const timeStr = formatTime();
+            const newRows = targets.map(t => {
+                const devOk = deviceResults[t] !== undefined ? deviceResults[t] : isSuccess;
+                const badge = `<span class="badge ${devOk ? 'bg-success' : 'bg-danger'}">${devOk ? '成功' : '失败'}</span>`;
+                return `<tr>
+                    <td class="ps-4 fw-bold">${t}</td>
+                    <td>${template}</td>
+                    <td>${badge}</td>
+                    <td class="text-muted">${timeStr}</td>
+                </tr>`;
+            }).join('');
+            tbody.innerHTML = newRows + (tbody.innerHTML.includes('暂无') ? '' : tbody.innerHTML);
+
+            if (isSuccess) {
+                alert(res.message);
+            } else {
+                alert(res.message + "\n\n--- 详细日志 ---\n" + (res.log || '').substring(0, 1000));
+            }
+        }).finally(() => { btn.disabled = false; btn.innerText = "执行下发"; });
+    }
+{% endblock %}

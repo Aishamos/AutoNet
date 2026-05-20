@@ -1,0 +1,13 @@
+---
+- name: 获取设备当前运行配置
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: 执行 display current-configuration
+      ansible.netcommon.cli_command:
+        command: "display current-configuration"
+      register: current_config
+
+    - name: 返回配置内容
+      debug:
+        var: current_config.stdout

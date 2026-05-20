@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}NetAuto - 设备管理{% endblock %}
+
+{% block style_extra %}
+.table th { font-weight: 500; color: #1d2129; background-color: #f7f8fa; }
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 style="font-weight: 600; margin: 0;">设备信息管理</h4>
+    <button class="btn btn-outline-primary btn-sm" onclick="exportInventory()">📥 导出清单</button>
+</div>
+
+<div class="card p-4">
+    <h6 class="mb-3" style="font-weight: 600;">添加新设备</h6>
+    <form id="deviceForm" class="row g-3">
+        <div class="col-md-2">
+            <input type="text" class="form-control form-control-sm" id="alias" placeholder="设备别名 (必填)" required>
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control form-control-sm" id="ip" placeholder="IP 地址 (必填)" required>
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control form-control-sm" id="user" value="admin" placeholder="用户名" required>
+        </div>
+        <div class="col-md-2">
+            <input type="password" class="form-control form-control-sm" id="pwd" placeholder="SSH 密码 (必填)" required>
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control form-control-sm" id="desc" placeholder="描述信息">
+        </div>
+        <div class="col-md-1 d-grid">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-add" onclick="saveDevice()">添加</button>
+        </div>
+    </form>
+</div>
+
+<div class="card p-4 mb-0">
+    <h6 class="mb-3" style="font-weight: 600;">筛选设备</h6>
+    <div class="d-flex gap-2 align-items-center">
+        <input type="text" class="form-control form-control-sm" id="search-alias" placeholder="搜索设备别名" style="width: 180px;" oninput="filterDevices()">
+        <input type="text" class="form-control form-control-sm" id="search-ip" placeholder="搜索 IP 地址" style="width: 180px;" oninput="filterDevices()">
+        <input type="text" class="form-control form-control-sm" id="search-desc" placeholder="搜索设备描述" style="width: 180px;" oninput="filterDevices()">
+        <select class="form-select form-select-sm" id="search-status" style="width: 130px;" onchange="filterDevices()">
+            <option value="">全部状态</option>
+            <option value="online">在线</option>
+            <option value="offline">离线</option>
+        </select>
+        <button class="btn btn-outline-secondary btn-sm" onclick="clearSearch()">清除筛选</button>
+    </div>
+</div>
+
+<div class="card p-0">
+    <table class="table table-hover mb-0" style="font-size: 14px;">
+        <thead>
+            <tr>
+                <th class="ps-4">设备别名</th><th>管理 IP</th><th>SSH 用户</th><th>描述</th><th class="text-center">状态</th><th class="text-end pe-4">操作</th>
+            </tr>
+        </thead>
+        <tbody id="device-table-body">
+            <tr><td colspan="6" class="text-center text-muted">加载中...</td></tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+    document.addEventListener("DOMContentLoaded", () => {
+        loadDevices();
+        setInterval(loadDeviceStatus, 5000);
+    });
+
+    let deviceStatusCache = {};
+
+    function loadDeviceStatus() {
+        fetch('/api/status/devices').then(res => res.json()).then(res => {
+            deviceStatusCache = res.data || {};
+            document.querySelectorAll('#device-table-body tr[data-alias]').forEach(tr => {
+                const alias = tr.dataset.alias;
+                const badge = tr.querySelector('.status-badge');
+                if (badge && alias in deviceStatusCache) {
+                    if (deviceStatusCache[alias]) {
+                        badge.className = 'badge bg-success status-badge';
+                        badge.innerText = '在线';
+                    } else {
+                        badge.className = 'badge bg-secondary status-badge';
+                        badge.innerText = '离线';
+                    }
+                }
+            });
+        });
+    }
+
+    function loadDevices() {
+        fetch('/api/devices').then(res => res.json()).then(res => {
+            const tbody = document.getElementById('device-table-body');
+            tbody.innerHTML = '';
+            if (!res.data || res.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">暂无设备数据</td></tr>';
+                return;
+            }
+            res.data.forEach(dev => {
+                const isOnline = deviceStatusCache[dev.alias];
+                const statusClass = isOnline === true ? 'bg-success' : (isOnline === false ? 'bg-secondary' : 'bg-warning');
+                const statusText = isOnline === true ? '在线' : (isOnline === false ? '离线' : '检测中');
+                tbody.innerHTML += `
+                    <tr data-alias="${dev.alias}">
+                        <td class="ps-4 fw-bold" style="color: var(--primary-color);">${dev.alias}</td>
+                        <td>${dev.ip}</td>
+                        <td><span class="badge bg-secondary">${dev.user}</span></td>
+                        <td class="text-muted">${dev.description}</td>
+                        <td class="text-center"><span class="badge ${statusClass} status-badge">${statusText}</span></td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-sm btn-outline-primary" onclick="checkConnectivity('${dev.alias}')">验证连通性</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteDevice('${dev.alias}')">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            loadDeviceStatus();
+        });
+    }
+
+    function saveDevice() {
+        const payload = {
+            alias: document.getElementById('alias').value,
+            ip: document.getElementById('ip').value,
+            user: document.getElementById('user').value,
+            password: document.getElementById('pwd').value,
+            description: document.getElementById('desc').value
+        };
+        if(!payload.alias || !payload.ip || !payload.password) return alert("必填项不能为空！");
+        const btn = document.getElementById('btn-add');
+        btn.innerText = "校验中..."; btn.disabled = true;
+
+        fetch('/api/devices', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(res => res.json()).then(res => {
+            if (res.status === 'success') {
+                logAction(`添加设备 ${payload.alias}`, '成功');
+                document.getElementById('deviceForm').reset();
+                loadDevices();
+            } else {
+                logAction(`添加设备 ${payload.alias}`, '失败');
+                alert(res.message);
+            }
+        }).finally(() => { btn.innerText = "添加"; btn.disabled = false; });
+    }
+
+    function deleteDevice(alias) {
+        if (!confirm(`确定删除设备 ${alias} 吗？`)) return;
+        fetch('/api/devices', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ alias: alias })
+        }).then(res => res.json()).then(res => {
+            if (res.status === 'success') { logAction(`删除设备 ${alias}`, '成功'); loadDevices(); }
+            else alert(res.message);
+        });
+    }
+
+    function exportInventory() {
+        fetch('/api/export_inventory', { method: 'POST' })
+        .then(res => {
+            if (!res.ok) return res.json().then(r => { throw new Error(r.message); });
+            const disposition = res.headers.get('Content-Disposition');
+            const filename = disposition ? disposition.split('filename=')[1].replace(/"/g, '') : 'inventory.yml';
+            return res.blob().then(blob => ({ blob, filename }));
+        })
+        .then(({ blob, filename }) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+            logAction('导出设备清单', '成功');
+        })
+        .catch(err => {
+            alert('导出失败: ' + err.message);
+            logAction('导出设备清单', '失败');
+        });
+    }
+
+    function checkConnectivity(alias) {
+        const btn = event.target;
+        btn.disabled = true; btn.innerText = "检测中...";
+        fetch('/api/check_connectivity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ alias: alias })
+        }).then(res => res.json()).then(res => {
+            logAction(`连通性验证 ${alias}`, res.status === 'success' ? '成功' : '失败');
+            alert(res.message);
+        }).finally(() => { btn.disabled = false; btn.innerText = "验证连通性"; });
+    }
+
+    function filterDevices() {
+        const aliasKey = document.getElementById('search-alias').value.trim().toLowerCase();
+        const ipKey = document.getElementById('search-ip').value.trim().toLowerCase();
+        const descKey = document.getElementById('search-desc').value.trim().toLowerCase();
+        const statusKey = document.getElementById('search-status').value;
+        const rows = document.querySelectorAll('#device-table-body tr[data-alias]');
+        rows.forEach(tr => {
+            const alias = tr.dataset.alias.toLowerCase();
+            const ip = tr.children[1].innerText.trim().toLowerCase();
+            const desc = tr.children[3].innerText.trim().toLowerCase();
+            const badge = tr.querySelector('.status-badge');
+            const statusText = badge ? badge.innerText : '';
+            let show = true;
+            if (aliasKey && !alias.includes(aliasKey)) show = false;
+            if (ipKey && !ip.includes(ipKey)) show = false;
+            if (descKey && !desc.includes(descKey)) show = false;
+            if (statusKey === 'online' && statusText !== '在线') show = false;
+            if (statusKey === 'offline' && statusText !== '离线') show = false;
+            tr.style.display = show ? '' : 'none';
+        });
+    }
+
+    function clearSearch() {
+        document.getElementById('search-alias').value = '';
+        document.getElementById('search-ip').value = '';
+        document.getElementById('search-desc').value = '';
+        document.getElementById('search-status').value = '';
+        filterDevices();
+    }
+{% endblock %}

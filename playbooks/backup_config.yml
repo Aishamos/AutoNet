@@ -1,0 +1,28 @@
+---
+- name: 批量备份华为设备配置
+  hosts: "{{ target_hosts | default('all') }}"
+  strategy: free
+  gather_facts: false
+  vars:
+    backup_dir: "./backups"
+    timestamp: "{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}"
+
+  tasks:
+    - name: 确保本地备份目录存在
+      file:
+        path: "{{ backup_dir }}"
+        state: directory
+
+    - name: 执行 display current-configuration 命令
+      ansible.netcommon.cli_command:
+        command: "display current-configuration"
+      register: config_output
+
+    - name: 保存配置到本地文件
+      copy:
+        content: "{{ config_output.stdout }}"
+        dest: "{{ backup_dir }}/{{ inventory_hostname }}_{{ timestamp }}.cfg"
+
+    - name: 记录备份结果
+      debug:
+        msg: "{{ inventory_hostname }} 备份完成"

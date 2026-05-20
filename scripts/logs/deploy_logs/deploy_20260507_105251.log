@@ -1,0 +1,32 @@
+模板: interface.j2
+目标: AR1
+时间: 2026-05-07 10:52:51
+============================================================
+
+PLAY [批量或单独下发配置到华为设备] ********************************************
+
+TASK [渲染并显示将要下发的配置（预览）] ****************************************
+ok: [AR1] => {
+    "msg": "将要下发的配置命令：\nsystem-view\ninterface g/0/0/1\n ip address 192.168.45.15 255.255.255.0\n undo shutdown\nreturn\n"
+}
+
+TASK [逐行下发配置命令（保证幂等性）] ******************************************
+ok: [AR1] => (item=system-view)
+failed: [AR1] (item=interface g/0/0/1) => {"ansible_loop_var": "item", "changed": false, "item": "interface g/0/0/1", "msg": "interface g/0/0/1\r\n               ^\r\nError: Wrong parameter found at '^' position.\r\n[AR1]"}
+failed: [AR1] (item= ip address 192.168.45.15 255.255.255.0) => {"ansible_loop_var": "item", "changed": false, "item": " ip address 192.168.45.15 255.255.255.0", "msg": " ip address 192.168.45.15 255.255.255.0\r\n        ^\r\nError: Unrecognized command found at '^' position.\r\n[AR1]"}
+failed: [AR1] (item= undo shutdown) => {"ansible_loop_var": "item", "changed": false, "item": " undo shutdown", "msg": " undo shutdown\r\n                   ^\r\nError:Incomplete command found at '^' position.\r\n[AR1]"}
+ok: [AR1] => (item=return)
+
+PLAY RECAP *********************************************************************
+AR1                        : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+
+
+📦 下发前备份 [AR1] 的当前运行配置...
+✅ 下发前备份完成
+
+🚀 开始下发配置到 [AR1]...
+
+❌ 配置下发失败
+
+[WARNING]: Using run_once with the free strategy is not currently supported.
+This task will still be executed for every host in the inventory list.

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}NetAuto - 监控报告{% endblock %}
+
+{% block style_extra %}
+.table th { background-color: #f7f8fa; font-weight: 500; }
+{% endblock %}
+
+{% block content %}
+<h4 class="page-title">全网监控报告</h4>
+
+<div class="card p-3 mb-4">
+    <div class="row align-items-end g-3">
+        <div class="col-md-3">
+            <label class="form-label text-secondary" style="font-size: 13px;">统计时间范围</label>
+            <div class="input-group input-group-sm">
+                <input type="date" class="form-control" id="date-start">
+                <span class="input-group-text">至</span>
+                <input type="date" class="form-control" id="date-end">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary btn-sm w-100" id="btn-generate" onclick="generateReport()">生成报告</button>
+        </div>
+    </div>
+</div>
+
+<div class="card p-0">
+    <div class="card-header bg-white fw-bold border-bottom">历史报告列表</div>
+    <div style="max-height: 554px; overflow-y: auto;">
+        <table class="table table-hover mb-0" style="font-size: 14px;">
+            <thead class="sticky-header">
+                <tr><th class="ps-4">报告文件名称</th><th>生成时间</th><th>文件大小</th><th class="text-end pe-4">操作</th></tr>
+            </thead>
+            <tbody id="report-table-body">
+                <tr><td colspan="4" class="text-center text-muted py-3">加载中...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+    document.addEventListener("DOMContentLoaded", () => {
+        let today = new Date();
+        let lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        document.getElementById('date-end').valueAsDate = today;
+        document.getElementById('date-start').valueAsDate = lastWeek;
+        loadReports();
+        document.getElementById('date-start').addEventListener('change', filterReports);
+        document.getElementById('date-end').addEventListener('change', filterReports);
+    });
+
+    function loadReports() {
+        fetch('/api/reports').then(res => res.json()).then(res => {
+            window._allReports = res.data || [];
+            filterReports();
+        });
+    }
+
+    function filterReports() {
+        const tbody = document.getElementById('report-table-body');
+        const startDate = document.getElementById('date-start').value;
+        const endDate = document.getElementById('date-end').value;
+        let reports = window._allReports || [];
+        if (startDate) {
+            const start = new Date(startDate + 'T00:00:00');
+            reports = reports.filter(r => new Date(r.time) >= start);
+        }
+        if (endDate) {
+            const end = new Date(endDate + 'T23:59:59');
+            reports = reports.filter(r => new Date(r.time) <= end);
+        }
+        tbody.innerHTML = '';
+        if (reports.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">暂无符合条件的报告</td></tr>';
+            return;
+        }
+        reports.forEach(r => {
+            tbody.innerHTML += `
+                <tr>
+                    <td class="ps-4 text-primary fw-bold">${r.name}</td>
+                    <td class="text-muted">${r.time}</td>
+                    <td>${r.size}</td>
+                    <td class="text-end pe-4"><a href="/api/reports/view/${r.name}" download="${r.name}" class="btn btn-sm btn-outline-success">下载</a></td>
+                </tr>
+            `;
+        });
+    }
+
+    function generateReport() {
+        const btn = document.getElementById('btn-generate');
+        btn.disabled = true; btn.innerText = "数据采集中...";
+        fetch('/api/reports/generate', { method: 'POST' })
+        .then(res => res.json())
+        .then(res => {
+            logAction('生成监控报告', res.status === 'success' ? '成功' : '失败');
+            alert(res.message);
+            if(res.status === 'success') loadReports();
+        }).finally(() => { btn.disabled = false; btn.innerText = "生成报告"; });
+    }
+{% endblock %}

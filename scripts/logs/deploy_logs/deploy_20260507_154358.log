@@ -1,0 +1,32 @@
+模板: interface.j2
+目标: AR2
+时间: 2026-05-07 15:43:58
+============================================================
+
+PLAY [批量或单独下发配置到华为设备] ********************************************
+
+TASK [渲染并显示将要下发的配置（预览）] ****************************************
+ok: [AR2] => {
+    "msg": "将要下发的配置命令：\nsystem-view\ninterface g0/0/1\n ip address 192.168.32.23 255.255.255.0\n undo shutdown\nreturn\n"
+}
+
+TASK [逐行下发配置命令] ********************************************************
+ok: [AR2] => (item=system-view)
+ok: [AR2] => (item=interface g0/0/1)
+failed: [AR2] (item= ip address 192.168.32.23 255.255.255.0) => {"ansible_loop_var": "item", "changed": false, "item": " ip address 192.168.32.23 255.255.255.0", "msg": " ip address 192.168.32.23 255.255.255.0\r\nError: The specified address conflicts with another address.\r\n[AR2-GigabitEthernet0/0/1]"}
+ok: [AR2] => (item= undo shutdown)
+ok: [AR2] => (item=return)
+
+PLAY RECAP *********************************************************************
+AR2                        : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+
+
+📦 下发前备份 [AR2] 的当前运行配置...
+✅ 下发前备份完成
+
+🚀 开始下发配置到 [AR2]...
+
+❌ 配置下发失败
+
+[WARNING]: Using run_once with the free strategy is not currently supported.
+This task will still be executed for every host in the inventory list.

@@ -1,0 +1,48 @@
+
+PLAY [批量备份华为设备配置] ****************************************************
+
+TASK [确保本地备份目录存在] ****************************************************
+ok: [AR1]
+ok: [AR2]
+
+TASK [执行 display current-configuration 命令] *********************************
+ok: [AR1]
+ok: [AR2]
+
+TASK [保存配置到本地文件] ******************************************************
+changed: [AR2]
+changed: [AR1]
+
+TASK [记录备份结果] ************************************************************
+ok: [AR1] => {
+    "msg": "✅ AR1 备份完成"
+}
+ok: [AR2] => {
+    "msg": "✅ AR2 备份完成"
+}
+
+PLAY RECAP *********************************************************************
+AR1                        : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+AR2                        : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+🚀 开始批量备份配置...
+✅ 已添加 6 个备份文件到暂存区
+📦 Git 提交成功: backup: 2026-05-06 16:52:40
+✅ 备份任务完成
+
+PLAY [批量备份华为设备配置] ****************************************************
+
+TASK [确保本地备份目录存在] ****************************************************
+ok: [AR1]
+ok: [AR2]
+
+TASK [执行 display current-configuration 命令] *********************************
+fatal: [AR2]: FAILED! => {"changed": false, "msg": "ssh connection failed: ssh connect failed: 没有到主机的路由"}
+fatal: [AR1]: FAILED! => {"changed": false, "msg": "ssh connection failed: ssh connect failed: 没有到主机的路由"}
+
+PLAY RECAP *********************************************************************
+AR1                        : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+AR2                        : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+
+🚀 开始备份配置 [all]...
+❌ 备份执行失败，请检查 Ansible 输出

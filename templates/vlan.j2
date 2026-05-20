@@ -1,0 +1,10 @@
+{% if vlan_id is defined %}
+system-view
+vlan {{ vlan_id }}
+{% if vlan_description is defined and vlan_description %}
+ description {{ vlan_description }}
+{% endif %}
+return
+{% else %}
+# 错误：缺少必要变量 vlan_id
+{% endif %}

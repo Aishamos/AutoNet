@@ -1,0 +1,32 @@
+---
+- name: 批量或单独下发配置到华为设备
+  # 将原来的 all 改为通过 target_hosts 变量控制，默认值为 all
+  hosts: "{{ target_hosts | default('all') }}"
+  strategy: free
+  gather_facts: false
+  vars:
+    template_file: "{{ template_file | default('acl.j2') }}"
+    template_path: "{{ playbook_dir }}/../templates/{{ template_file }}"
+    config_commands: "{{ lookup('template', template_path) }}"
+
+  tasks:
+    - name: 渲染并显示将要下发的配置（预览）
+      debug:
+        msg: "将要下发的配置命令：\n{{ config_commands }}"
+      run_once: true
+
+    - name: 逐行下发配置命令
+      ansible.netcommon.cli_command:
+        command: "{{ item }}"
+      loop: "{{ config_commands.split('\n') | reject('==', '') | list }}"
+      register: deploy_result
+
+    - name: 保存配置到设备
+      ansible.netcommon.cli_command:
+        command: save
+        prompt: "Are you sure to continue\\? \\(y/n\\)\\[n\\]:"
+        answer: "y"
+
+    - name: 显示下发结果
+      debug:
+        msg: "✅ {{ inventory_hostname }} 配置下发完成，共执行 {{ deploy_result.results | length }} 条命令"

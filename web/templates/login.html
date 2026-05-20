@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetAuto - 系统登录</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --primary-color: #165DFF; }
+        body { background-color: #f2f3f5; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        .login-card { width: 100%; max-width: 400px; padding: 40px 30px; background: #fff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e5e6eb; }
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .btn-primary:hover { background-color: #1453e0; border-color: #1453e0; }
+        .title { font-size: 24px; font-weight: 600; color: #1d2129; margin-bottom: 30px; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <div class="title">🌐 NetAuto 运维管理系统</div>
+    <div id="error-msg" class="alert alert-danger d-none" style="font-size: 14px; padding: 10px;">账号或密码错误！</div>
+    
+    <form id="loginForm">
+        <div class="mb-3">
+            <label class="form-label" style="color: #4e5969; font-size: 14px;">用户名</label>
+            <input type="text" id="username" class="form-control" placeholder="请输入用户名" required>
+        </div>
+        <div class="mb-4">
+            <label class="form-label" style="color: #4e5969; font-size: 14px;">密码</label>
+            <input type="password" id="password" class="form-control" placeholder="请输入密码" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">登 录</button>
+    </form>
+</div>
+
+<script>
+    // 登录表单提交，走后端验证
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+
+        // 使用 FormData 提交到后端 /login 接口
+        const formData = new FormData();
+        formData.append('username', u);
+        formData.append('password', p);
+
+        fetch('/login', {
+            method: 'POST',
+            body: formData,
+            redirect: 'follow'
+        }).then(res => {
+            if (res.redirected && res.url.includes('dashboard')) {
+                // 后端验证通过，跳转到了 dashboard
+                localStorage.setItem('isLoggedIn', 'true');
+                logAction('系统登录', '成功');
+                window.location.href = '/dashboard';
+            } else {
+                // 登录失败，后端会重新渲染 login 页面
+                document.getElementById('error-msg').classList.remove('d-none');
+            }
+        }).catch(() => {
+            document.getElementById('error-msg').classList.remove('d-none');
+        });
+    });
+
+    // 操作日志工具函数：发送给后端永久保存
+    function logAction(actionName, result) {
+        fetch('/api/logs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: actionName, result: result })
+        });
+    }
+</script>
+</body>
+</html>

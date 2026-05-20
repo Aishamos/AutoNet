@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NetAuto{% endblock %}</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.css">
+    {% block head_extra %}{% endblock %}
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = '/login';
+        function logout() { localStorage.removeItem('isLoggedIn'); window.location.href = '/login'; }
+    </script>
+    <style>
+        :root { --primary-color: #165DFF; --bg-color: #f2f3f5; --text-main: #1d2129; --border-color: #e5e6eb; }
+        body { font-family: -apple-system, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; }
+        /* 顶部导航 */
+        .header { height: 60px; background: #fff; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        /* 侧边栏抽屉式 */
+        .sidebar {
+            width: 65px;
+            background: #fff;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .sidebar:hover {
+            width: 220px;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 15px 0 15px 23px;
+            color: #4e5969;
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+        }
+        .sidebar a i {
+            font-size: 18px;
+            min-width: 24px;
+            margin-right: 15px !important;
+        }
+        .sidebar a:hover { background: #f2f3f5; color: var(--primary-color); }
+        .sidebar a.active { background: #e8f3ff; color: var(--primary-color); border-left-color: var(--primary-color); font-weight: 500; }
+        .main-content { margin-left: 70px; margin-top: 60px; padding: 24px; transition: margin-left 0.3s ease; }
+        .card { border: 1px solid var(--border-color); border-radius: 4px; box-shadow: none; margin-bottom: 20px; background: #fff; }
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .btn-primary:hover { background-color: #1453e0; border-color: #1453e0; }
+        .sticky-header th { position: sticky; top: 0; background: #fff; z-index: 1; }
+        .page-title { font-weight: 600; margin-bottom: 20px; }
+        {% block style_extra %}{% endblock %}
+    </style>
+</head>
+<body>
+<div class="header">
+    <div style="font-size: 18px; font-weight: 600; color: var(--primary-color);">
+        🌐 NetAuto 系统控制台
+    </div>
+    <button class="btn btn-sm btn-outline-danger" onclick="logout()">退出登录</button>
+</div>
+
+<div class="sidebar" id="global-sidebar">
+    <a href="/dashboard"><i class="bi bi-house-door me-2"></i>主控台首页</a>
+    <a href="/inventory"><i class="bi bi-hdd-network me-2"></i>设备信息管理</a>
+    <a href="/backup"><i class="bi bi-cloud-arrow-down me-2"></i>配置自动备份</a>
+    <a href="/deploy"><i class="bi bi-send-check me-2"></i>批量配置下发</a>
+    <a href="/rollback"><i class="bi bi-shield-check me-2"></i>配置校验与回滚</a>
+    <a href="/report"><i class="bi bi-file-earmark-bar-graph me-2"></i>全网监控报告</a>
+</div>
+
+<div class="main-content">
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname;
+        const links = document.querySelectorAll('#global-sidebar a');
+        links.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === currentPath);
+        });
+    });
+
+    function logAction(actionName, result) {
+        fetch('/api/logs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: actionName, result: result })
+        }).then(() => {
+            if (typeof renderHistory === 'function') renderHistory();
+            if (typeof loadLogs === 'function') loadLogs();
+            if (typeof renderRollbackHistory === 'function') renderRollbackHistory();
+        });
+    }
+
+    function updateDeviceStatusUI(deviceStatus, containerSelector, checkboxClass) {
+        document.querySelectorAll(containerSelector + ' .form-check').forEach(el => {
+            const chk = el.querySelector('.form-check-input');
+            const alias = chk.value;
+            const isOnline = deviceStatus[alias] === true;
+            const label = el.querySelector('label');
+            const badge = label.querySelector('.badge');
+            if (isOnline) {
+                chk.disabled = false;
+                el.style.opacity = '';
+                label.style = '';
+                if (badge) badge.remove();
+            } else {
+                chk.disabled = true;
+                chk.checked = false;
+                el.style.opacity = '0.8';
+                label.style = 'color: #999; cursor: not-allowed;';
+                if (!badge) label.innerHTML += ' <span class="badge bg-secondary" style="font-size:10px;">离线</span>';
+            }
+        });
+    }
+
+    function formatTime(date) {
+        const d = date || new Date();
+        return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+    }
+    {% block script_extra %}{% endblock %}
+</script>
+</body>
+</html>

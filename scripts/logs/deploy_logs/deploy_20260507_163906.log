@@ -1,0 +1,32 @@
+模板: interface.j2
+目标: AR2
+时间: 2026-05-07 16:39:06
+============================================================
+
+PLAY [批量或单独下发配置到华为设备] ********************************************
+
+TASK [渲染并显示将要下发的配置（预览）] ****************************************
+ok: [AR2] => {
+    "msg": "将要下发的配置命令：\nsystem-view\ninterface g4/0/0\n ip address 192.168.99.22 255.255.255.0\n undo shutdown\nreturn\n"
+}
+
+TASK [逐行下发配置命令] ********************************************************
+ok: [AR2] => (item=system-view)
+ok: [AR2] => (item=interface g4/0/0)
+ok: [AR2] => (item= ip address 192.168.99.22 255.255.255.0)
+failed: [AR2] (item= undo shutdown) => {"ansible_loop_var": "item", "changed": false, "item": " undo shutdown", "msg": "command timeout triggered, timeout value is 30 secs.\nSee the timeout setting options in the Network Debug and Troubleshooting Guide."}
+failed: [AR2] (item=return) => {"ansible_loop_var": "item", "changed": false, "item": "return", "msg": "command timeout triggered, timeout value is 30 secs.\nSee the timeout setting options in the Network Debug and Troubleshooting Guide."}
+
+PLAY RECAP *********************************************************************
+AR2                        : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+
+
+📦 下发前备份 [AR2] 的当前运行配置...
+✅ 下发前备份完成
+
+🚀 开始下发配置到 [AR2]...
+
+❌ 配置下发失败
+
+[WARNING]: Using run_once with the free strategy is not currently supported.
+This task will still be executed for every host in the inventory list.

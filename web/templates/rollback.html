@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+
+{% block title %}NetAuto - 校验与回滚{% endblock %}
+
+{% block content %}
+<h4 class="page-title">配置校验与回滚</h4>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-white fw-bold border-bottom">1. 漂移与合规性校验</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label text-muted m-0" style="font-size: 13px;">选择校验设备</label>
+                        <div>
+                            <button class="btn btn-sm btn-link text-decoration-none" onclick="toggleDriftChecks(true)">全选</button> |
+                            <button class="btn btn-sm btn-link text-decoration-none" onclick="toggleDriftChecks('invert')">反选</button>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control form-control-sm mb-2" id="drift-search" placeholder="搜索设备..." oninput="filterDriftDevices()" style="max-width: 200px; height: 28px; font-size: 12px;">
+                    <div id="drift-checkboxes" class="p-3 border rounded bg-light d-flex flex-wrap gap-3" style="max-height: 150px; overflow-y: auto;"></div>
+                </div>
+                <button class="btn btn-primary btn-sm w-100 mb-3" id="btn-drift" onclick="runCheck()">执行配置校验</button>
+
+                <div class="border rounded p-0" style="max-height: 442px; overflow-y: auto;">
+                    <table class="table table-sm mb-0 text-center" style="font-size: 14px; table-layout: fixed;">
+                        <thead class="sticky-header"><tr><th style="width: 30%;">检测时间</th><th style="width: 20%;">目标</th><th style="width: 20%;">检测结果</th><th style="width: 30%;">差异明细</th></tr></thead>
+                        <tbody id="drift-result"><tr><td colspan="4" class="text-muted py-2">暂无记录</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100 border-danger">
+            <div class="card-header bg-white text-danger fw-bold border-bottom">2. 故障灾难回滚</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label text-muted m-0" style="font-size: 13px;">选择要回滚的设备</label>
+                        <div>
+                            <button class="btn btn-sm btn-link text-decoration-none" onclick="toggleRollbackChecks(true)">全选</button> |
+                            <button class="btn btn-sm btn-link text-decoration-none" onclick="toggleRollbackChecks('invert')">反选</button>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control form-control-sm mb-2" id="rollback-search" placeholder="搜索设备..." oninput="filterRollbackDevices()" style="max-width: 200px; height: 28px; font-size: 12px;">
+                    <div id="rollback-checkboxes" class="p-3 border rounded bg-light d-flex flex-wrap gap-3" style="max-height: 150px; overflow-y: auto;"></div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-muted" style="font-size: 13px;">选择历史备份版本 (仅单设备回滚时可选)</label>
+                    <select class="form-select form-select-sm" id="backup-file" disabled>
+                        <option value="">请先选择单台设备</option>
+                    </select>
+                </div>
+                <button class="btn btn-danger btn-sm w-100 mb-2" id="btn-rollback" onclick="runRollback()">⚠️ 确认执行覆盖回滚</button>
+                <button class="btn btn-outline-danger btn-sm w-100" id="btn-rollback-all" onclick="runRollbackAll()">🚨 一键回滚全网所有设备</button>
+
+                <div class="border-top pt-3 mt-3">
+                    <h6 class="fw-bold mb-2" style="font-size: 13px;">操作记录</h6>
+                    <div class="border rounded p-0" style="max-height: 280px; overflow-y: auto;">
+                        <table class="table table-sm mb-0" style="font-size: 15px;">
+                            <thead class="sticky-header"><tr><th class="ps-3">操作时间</th><th>操作类型</th><th>结果</th></tr></thead>
+                            <tbody id="rollback-history-body"><tr><td colspan="3" class="text-center text-muted py-2">暂无记录</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+    document.addEventListener("DOMContentLoaded", () => {
+        loadDeviceList();
+        loadDriftHistory();
+        renderRollbackHistory();
+        setInterval(loadDeviceStatus, 5000);
+    });
+
+    function renderRollbackHistory() {
+        fetch('/api/logs').then(res => res.json()).then(res => {
+            const logs = (res.data || []).filter(l => l.action.includes('回滚'));
+            const tbody = document.getElementById('rollback-history-body');
+            if (logs.length === 0) { tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-2">暂无记录</td></tr>'; return; }
+            tbody.innerHTML = logs.slice(0, 10).map(l => `
+                <tr>
+                    <td class="ps-3 text-muted">${l.time}</td>
+                    <td>${l.action}</td>
+                    <td><span class="badge ${l.result.includes('成功') ? 'bg-success' : 'bg-danger'}">${l.result}</span></td>
+                </tr>
+            `).join('');
+        });
+    }
+
+    function loadDeviceList() {
+        Promise.all([
+            fetch('/api/devices').then(res => res.json()),
+            fetch('/api/status/devices').then(res => res.json())
+        ]).then(([devRes, statusRes]) => {
+            const deviceStatus = statusRes.data || {};
+            const driftBox = document.getElementById('drift-checkboxes');
+            const rollbackBox = document.getElementById('rollback-checkboxes');
+            driftBox.innerHTML = '';
+            rollbackBox.innerHTML = '';
+            if(devRes.data) {
+                devRes.data.forEach(d => {
+                    const isOnline = deviceStatus[d.alias] === true;
+                    const disabled = !isOnline;
+                    const labelStyle = isOnline ? '' : 'color: #999; cursor: not-allowed;';
+                    const html = `
+                        <div class="form-check" style="${disabled ? 'opacity: 0.8;' : ''}">
+                            <input class="form-check-input drift-check" type="checkbox" value="${d.alias}" id="drift_${d.alias}" ${disabled ? 'disabled' : ''}>
+                            <label class="form-check-label" for="drift_${d.alias}" style="${labelStyle}">
+                                ${d.alias} ${isOnline ? '' : '<span class="badge bg-secondary" style="font-size:10px;">离线</span>'}
+                            </label>
+                        </div>
+                    `;
+                    const html2 = `
+                        <div class="form-check" style="${disabled ? 'opacity: 0.8;' : ''}">
+                            <input class="form-check-input rollback-check" type="checkbox" value="${d.alias}" id="rb_${d.alias}" ${disabled ? 'disabled' : ''} onchange="onRollbackCheckChange()">
+                            <label class="form-check-label" for="rb_${d.alias}" style="${labelStyle}">
+                                ${d.alias} ${isOnline ? '' : '<span class="badge bg-secondary" style="font-size:10px;">离线</span>'}
+                            </label>
+                        </div>
+                    `;
+                    driftBox.innerHTML += html;
+                    rollbackBox.innerHTML += html2;
+                });
+            }
+        });
+    }
+
+    function loadDeviceStatus() {
+        fetch('/api/status/devices').then(res => res.json()).then(res => {
+            const deviceStatus = res.data || {};
+            updateDeviceStatusUI(deviceStatus, '#drift-checkboxes', '.drift-check');
+            updateDeviceStatusUI(deviceStatus, '#rollback-checkboxes', '.rollback-check');
+        });
+    }
+
+    function loadDriftHistory() {
+        fetch('/api/drift/history').then(res => res.json()).then(res => {
+            if (res.status === 'success' && res.data && res.data.length > 0) {
+                renderDriftResults(res.data.slice(0, 20));
+            }
+        });
+    }
+
+    function renderDriftResults(records) {
+        const tbody = document.getElementById('drift-result');
+        if (!records || records.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-muted py-2">暂无记录</td></tr>';
+            return;
+        }
+        tbody.innerHTML = records.map(r => `
+            <tr>
+                <td class="text-muted">${r.time}</td>
+                <td class="fw-bold">${r.target}</td>
+                <td><span class="badge ${r.result === '合规一致' ? 'bg-success' : 'bg-warning text-dark'}">${r.result}</span></td>
+                <td>${r.report ? `<a href="/api/check/download/${r.report}" class="btn btn-link btn-sm p-0">下载报告</a>` : '-'}</td>
+            </tr>
+        `).join('');
+    }
+
+    function toggleDriftChecks(state) {
+        document.querySelectorAll('.drift-check:not(:disabled)').forEach(chk => {
+            chk.checked = state === 'invert' ? !chk.checked : state;
+        });
+    }
+
+    function toggleRollbackChecks(state) {
+        document.querySelectorAll('.rollback-check:not(:disabled)').forEach(chk => {
+            chk.checked = state === 'invert' ? !chk.checked : state;
+        });
+        onRollbackCheckChange();
+    }
+
+    function filterDriftDevices() {
+        const keyword = document.getElementById('drift-search').value.toLowerCase();
+        document.querySelectorAll('#drift-checkboxes .form-check').forEach(el => {
+            const alias = el.querySelector('label').textContent.toLowerCase();
+            el.style.display = alias.includes(keyword) ? '' : 'none';
+        });
+    }
+
+    function filterRollbackDevices() {
+        const keyword = document.getElementById('rollback-search').value.toLowerCase();
+        document.querySelectorAll('#rollback-checkboxes .form-check').forEach(el => {
+            const alias = el.querySelector('label').textContent.toLowerCase();
+            el.style.display = alias.includes(keyword) ? '' : 'none';
+        });
+    }
+
+    function getSelectedDriftDevices() {
+        const targets = [];
+        document.querySelectorAll('.drift-check:checked').forEach(c => targets.push(c.value));
+        return targets;
+    }
+
+    function getSelectedRollbackDevices() {
+        const targets = [];
+        document.querySelectorAll('.rollback-check:checked').forEach(c => targets.push(c.value));
+        return targets;
+    }
+
+    function onRollbackCheckChange() {
+        const targets = getSelectedRollbackDevices();
+        const backupSelect = document.getElementById('backup-file');
+        if (targets.length === 1) {
+            backupSelect.disabled = false;
+            backupSelect.innerHTML = '<option value="">加载中...</option>';
+            fetch(`/api/check/backups/${targets[0]}`).then(res => res.json()).then(res => {
+                backupSelect.innerHTML = '';
+                if (res.data && res.data.length > 0) {
+                    res.data.forEach(b => backupSelect.add(new Option(b.filename, b.path)));
+                } else {
+                    backupSelect.add(new Option("暂无备份记录", ""));
+                    backupSelect.disabled = true;
+                }
+            });
+        } else {
+            backupSelect.innerHTML = '<option value="">' + (targets.length === 0 ? '请先选择单台设备' : '多设备将使用各自最新备份') + '</option>';
+            backupSelect.disabled = true;
+        }
+    }
+
+    // 漂移校验
+    function runCheck() {
+        const targets = getSelectedDriftDevices();
+        if (targets.length === 0) return alert("请至少选择一台设备！");
+        const targetStr = targets.join(',');
+        const btn = document.getElementById('btn-drift');
+        btn.disabled = true; btn.innerText = "校验比对中...";
+
+        fetch('/api/check/run', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ action: 'drift', target: targetStr })
+        }).then(res => res.json()).then(res => {
+            logAction(`配置校验 [${targetStr}]`, res.status === 'success' ? '完成' : '失败');
+
+            let results = [];
+            try {
+                const lines = (res.log || '').trim().split('\n');
+                const jsonLine = lines.find(l => l.startsWith('['));
+                if (jsonLine) results = JSON.parse(jsonLine);
+            } catch (e) {}
+
+            const timeStr = formatTime();
+            const records = results.map(r => ({
+                time: timeStr,
+                target: r.device,
+                result: r.status === 'ok' ? '合规一致' : (r.status === 'drift' ? '检测到漂移' : '检测失败'),
+                report: r.report || null
+            }));
+
+            if (records.length === 0) {
+                targets.forEach(t => {
+                    records.push({ time: timeStr, target: t, result: res.status === 'success' ? '合规一致' : '检测失败', report: null });
+                });
+            }
+
+            fetch('/api/drift/history', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ records: records })
+            }).then(() => loadDriftHistory());
+
+            alert(res.message);
+        }).finally(() => { btn.disabled = false; btn.innerText = "执行配置校验"; });
+    }
+
+    // 执行回滚
+    function runRollback() {
+        const targets = getSelectedRollbackDevices();
+        if (targets.length === 0) return alert("请至少选择一台设备！");
+        const backupFile = document.getElementById('backup-file').value;
+
+        if (targets.length === 1 && !backupFile) return alert("请选择要恢复的备份版本！");
+        if(!confirm(`⚠️ 高危操作确认\n即将把设备 [${targets.join(',')}] 覆盖还原至历史配置。\n操作不可逆转，是否确认执行？`)) return;
+
+        const btn = document.getElementById('btn-rollback');
+        btn.disabled = true; btn.innerText = "配置覆盖回滚中...";
+
+        if (targets.length === 1) {
+            fetch('/api/check/run', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ action: 'rollback', target: targets[0], backup_file: backupFile })
+            }).then(res => res.json()).then(res => {
+                logAction(`配置回滚 [${targets[0]}]`, res.status === 'success' ? '成功' : '失败');
+                alert(res.message);
+            }).finally(() => { btn.disabled = false; btn.innerText = "⚠️ 确认执行覆盖回滚"; });
+        } else {
+            let completed = 0;
+            let failed = 0;
+            targets.forEach(t => {
+                fetch('/api/check/run', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'rollback', target: t })
+                }).then(res => res.json()).then(res => {
+                    logAction(`配置回滚 [${t}]`, res.status === 'success' ? '成功' : '失败');
+                    if (res.status !== 'success') failed++;
+                }).finally(() => {
+                    completed++;
+                    if (completed === targets.length) {
+                        alert(`批量回滚完成：成功 ${completed - failed} 台，失败 ${failed} 台`);
+                        btn.disabled = false; btn.innerText = "⚠️ 确认执行覆盖回滚";
+                    }
+                });
+            });
+        }
+    }
+
+    // 一键回滚全网
+    function runRollbackAll() {
+        if(!confirm('🚨 极度危险操作！\n即将把全网所有设备回滚到各自的最新备份配置。\n此操作不可逆转，确定继续吗？')) return;
+        if(!confirm('再次确认：确定要回滚全网所有设备吗？')) return;
+
+        const btn = document.getElementById('btn-rollback-all');
+        btn.disabled = true; btn.innerText = "全网回滚执行中...";
+
+        fetch('/api/check/run', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ action: 'rollback', target: 'all' })
+        }).then(res => res.json()).then(res => {
+            logAction('全网回滚', res.status === 'success' ? '成功' : '失败');
+            alert(res.message);
+        }).finally(() => { btn.disabled = false; btn.innerText = "🚨 一键回滚全网所有设备"; });
+    }
+{% endblock %}

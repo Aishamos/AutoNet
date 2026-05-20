@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>网络设备巡检报告 - {{ report_id }}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .report-wrapper {
+            max-width: 1100px;
+            margin: 20px auto;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        /* 报告头部 */
+        .report-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            padding: 30px 40px;
+        }
+        .report-header h1 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .report-meta {
+            display: flex;
+            gap: 30px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .report-meta span { display: flex; align-items: center; gap: 6px; }
+
+        /* 内容区域 */
+        .report-body { padding: 30px 40px; }
+
+        /* 章节标题 */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e3c72;
+            margin: 30px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e8ecf1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title:first-child { margin-top: 0; }
+        .section-icon { font-size: 20px; }
+
+        /* 执行摘要 */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .summary-card {
+            background: #f8f9fa;
+            border: 1px solid #e8ecf1;
+            border-radius: 8px;
+            padding: 18px;
+            text-align: center;
+        }
+        .summary-card .label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .summary-card .value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .summary-card .unit {
+            font-size: 14px;
+            color: #999;
+            margin-left: 4px;
+        }
+        .health-good { color: #28a745; }
+        .health-warn { color: #ffc107; }
+        .health-bad { color: #dc3545; }
+
+        /* 告警表格 */
+        .alert-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .alert-table th {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 2px solid #e8ecf1;
+        }
+        .alert-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .alert-table tr:hover { background: #fafbfc; }
+        .badge-critical {
+            background: #dc3545;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-warning {
+            background: #ffc107;
+            color: #333;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 设备详情表格 */
+        .device-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .device-table th {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 2px solid #e8ecf1;
+            white-space: nowrap;
+        }
+        .device-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .device-table tr:hover { background: #fafbfc; }
+        .status-online {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .status-offline {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #f1f3f5;
+            font-size: 12px;
+            border: 1px solid #dee2e6;
+        }
+        .badge-ok { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .badge-none { background: #fff3cd; border-color: #ffeaa7; color: #856404; }
+
+        /* 接口状态子表格 */
+        .intf-detail {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .intf-detail span {
+            margin-right: 8px;
+        }
+        .intf-up { color: #28a745; }
+        .intf-down { color: #dc3545; }
+
+        /* 巡检结论 */
+        .conclusion-box {
+            background: #f8f9fa;
+            border: 1px solid #e8ecf1;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .conclusion-item {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .conclusion-item::before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            color: #2a5298;
+            font-weight: bold;
+        }
+
+        /* 备份状态汇总 */
+        .backup-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .backup-card {
+            background: #f8f9fa;
+            border: 1px solid #e8ecf1;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .backup-card .label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .backup-card .value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+
+        /* 页脚 */
+        .report-footer {
+            background: #f8f9fa;
+            border-top: 1px solid #e8ecf1;
+            padding: 20px 40px;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="report-wrapper">
+    <!-- 报告头部 -->
+    <div class="report-header">
+        <h1>网络设备自动化巡检报告</h1>
+        <div class="report-meta">
+            <span>报告编号：{{ report_id }}</span>
+            <span>生成时间：{{ gen_time }}</span>
+            <span>生成系统：NetAuto 自动化运维平台</span>
+        </div>
+    </div>
+
+    <div class="report-body">
+        <!-- 一、执行摘要 -->
+        <div class="section-title">
+            <span class="section-icon">📊</span> 一、执行摘要
+        </div>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">纳管设备总数</div>
+                <div class="value">{{ total }}<span class="unit">台</span></div>
+            </div>
+            <div class="summary-card">
+                <div class="label">正常在线</div>
+                <div class="value health-good">{{ online }}<span class="unit">台</span></div>
+            </div>
+            <div class="summary-card">
+                <div class="label">离线异常</div>
+                <div class="value {% if offline > 0 %}health-bad{% else %}health-good{% endif %}">{{ offline }}<span class="unit">台</span></div>
+            </div>
+            <div class="summary-card">
+                <div class="label">网络健康率</div>
+                <div class="value {% if summary.health_rate >= 80 %}health-good{% elif summary.health_rate >= 60 %}health-warn{% else %}health-bad{% endif %}">{{ summary.health_rate }}<span class="unit">%</span></div>
+            </div>
+        </div>
+
+        {% if alerts %}
+        <!-- 二、告警汇总 -->
+        <div class="section-title">
+            <span class="section-icon">⚠️</span> 二、告警与异常汇总
+        </div>
+        <table class="alert-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">级别</th>
+                    <th style="width: 120px;">设备</th>
+                    <th style="width: 130px;">IP 地址</th>
+                    <th>告警描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alert in alerts %}
+                <tr>
+                    <td><span class="badge-{% if alert.level == '严重' %}critical{% else %}warning{% endif %}">{{ alert.level }}</span></td>
+                    <td style="font-weight: 500;">{{ alert.device }}</td>
+                    <td>{{ alert.ip }}</td>
+                    <td>{{ alert.message }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- 三、设备运行状态详情 -->
+        <div class="section-title">
+            <span class="section-icon">🖥️</span> 三、设备运行状态详情
+        </div>
+        <table class="device-table">
+            <thead>
+                <tr>
+                    <th>设备别名</th>
+                    <th>管理 IP</th>
+                    <th>运行状态</th>
+                    <th>VRP 版本</th>
+                    <th>CPU</th>
+                    <th>内存</th>
+                    <th>接口状态</th>
+                    <th>路由条目</th>
+                    <th>运行时长</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dev in devices %}
+                <tr>
+                    <td style="font-weight: 500;">{{ dev.alias }}</td>
+                    <td>{{ dev.ip }}</td>
+                    <td class="status-{{ dev.status_cls }}">{{ dev.status_txt }}</td>
+                    <td>{{ dev.version }}</td>
+                    <td>{{ dev.cpu }}</td>
+                    <td>{{ dev.mem }}</td>
+                    <td>
+                        {% if dev.status_cls == 'online' %}
+                        <div>{{ dev.interfaces.up }}/{{ dev.interfaces.total }} UP</div>
+                        {% if dev.interfaces.down > 0 %}
+                        <div class="intf-detail">
+                            <span class="intf-down">{{ dev.interfaces.down }} 个 DOWN</span>
+                        </div>
+                        {% endif %}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>{{ dev.route_count }}</td>
+                    <td style="color: #666; font-size: 12px;">{{ dev.uptime }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- 四、备份状态汇总 -->
+        <div class="section-title">
+            <span class="section-icon">💾</span> 四、配置备份状态
+        </div>
+        <div class="backup-summary">
+            <div class="backup-card">
+                <div class="label">已备份设备</div>
+                <div class="value">{{ summary.total - summary.no_backup }}<span class="unit">台</span></div>
+            </div>
+            <div class="backup-card">
+                <div class="label">未备份设备</div>
+                <div class="value {% if summary.no_backup > 0 %}health-bad{% else %}health-good{% endif %}">{{ summary.no_backup }}<span class="unit">台</span></div>
+            </div>
+            <div class="backup-card">
+                <div class="label">备份覆盖率</div>
+                <div class="value {% if summary.no_backup == 0 %}health-good{% else %}health-warn{% endif %}">{{ ((summary.total - summary.no_backup) / summary.total * 100) | round(1) if summary.total > 0 else 0 }}<span class="unit">%</span></div>
+            </div>
+        </div>
+        <table class="device-table">
+            <thead>
+                <tr>
+                    <th>设备别名</th>
+                    <th>备份状态</th>
+                    <th>最新备份时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dev in devices %}
+                <tr>
+                    <td style="font-weight: 500;">{{ dev.alias }}</td>
+                    <td><span class="badge {% if dev.backup_status == '正常' %}badge-ok{% else %}badge-none{% endif %}">{{ dev.backup_status }}</span></td>
+                    <td style="color: #666;">{{ dev.backup_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- 五、巡检结论与建议 -->
+        <div class="section-title">
+            <span class="section-icon">📋</span> 五、巡检结论与建议
+        </div>
+        <div class="conclusion-box">
+            {% for item in summary.suggestions %}
+            <div class="conclusion-item">{{ item }}</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="report-footer">
+        本报告由 NetAuto 自动化运维平台自动生成 | 生成时间：{{ gen_time }} | 报告编号：{{ report_id }}
+    </div>
+</div>
+
+</body>
+</html>

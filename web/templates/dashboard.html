@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}NetAuto - 主控台{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdn.bootcdn.net/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
+{% endblock %}
+
+{% block style_extra %}
+.data-card {padding: 20px; background: #fff; border: 1px solid var(--border-color); border-radius: 4px; display: block; text-decoration: none; transition: all 0.2s ease; cursor: pointer; }
+.data-card:hover { border-color: var(--primary-color); box-shadow: 0 4px 12px rgba(22,93,255,0.15); transform: translateY(-3px); }
+.data-title { font-size: 14px; color: #86909c; margin-bottom: 8px; }
+.data-value { font-size: 28px; font-weight: 600; color: var(--text-main); }
+.quick-btn { height: 210px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fff; border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: var(--text-main); transition: 0.2s; }
+.quick-btn:hover { border-color: var(--primary-color); box-shadow: 0 4px 12px rgba(22,93,255,0.15); transform: translateY(-3px); }
+{% endblock %}
+
+{% block content %}
+<h4 class="mb-4" style="font-weight: 600;">数据概览</h4>
+
+<div class="row mb-4 g-3">
+    <div class="col-md-3">
+        <a href="/inventory" class="data-card">
+            <div class="data-title">设备总数</div>
+            <div class="data-value" id="stat-devices">-</div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="/inventory" class="data-card">
+            <div class="data-title">在线设备数</div>
+            <div class="data-value text-success" id="stat-online">-</div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="/backup" class="data-card">
+            <div class="data-title">历史备份文件</div>
+            <div class="data-value" id="stat-backups">-</div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="/deploy" class="data-card">
+            <div class="data-title">可用配置模板</div>
+            <div class="data-value" id="stat-templates">-</div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-white fw-bold">快捷功能入口</div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-4"><a href="/inventory" class="quick-btn"><span>➕</span><span class="mt-2 text-sm">添加设备</span></a></div>
+                    <div class="col-4"><a href="/backup" class="quick-btn"><span>💾</span><span class="mt-2 text-sm">立即备份</span></a></div>
+                    <div class="col-4"><a href="/deploy" class="quick-btn"><span>🚀</span><span class="mt-2 text-sm">下发配置</span></a></div>
+                    <div class="col-4"><a href="/rollback" class="quick-btn"><span>🛡️</span><span class="mt-2 text-sm">校验配置</span></a></div>
+                    <div class="col-4"><a href="/report" class="quick-btn"><span>📊</span><span class="mt-2 text-sm">生成报告</span></a></div>
+                    <div class="col-4"><a href="/inventory" class="quick-btn"><span>📥</span><span class="mt-2 text-sm">清单导出</span></a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-white fw-bold">最近操作记录</div>
+            <div style="max-height: 520px; overflow-y: auto;">
+                <table class="table mb-0" style="font-size: 18px;">
+                    <thead class="sticky-header"><tr><th>操作时间</th><th>操作类型</th><th>结果</th></tr></thead>
+                    <tbody id="log-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+    const socket = io();
+    socket.on('status_update', function(data) {
+        const onlineEl = document.getElementById('stat-online');
+        const totalEl = document.getElementById('stat-devices');
+        if (totalEl) totalEl.innerText = data.total_count;
+        if (onlineEl) {
+            onlineEl.innerText = data.online_count;
+            onlineEl.classList.toggle('text-warning', data.online_count < data.total_count);
+            onlineEl.classList.toggle('text-success', data.online_count >= data.total_count);
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadStats();
+        loadLogs();
+        setInterval(() => { loadStats(); loadLogs(); }, 5000);
+    });
+
+    function loadStats() {
+        fetch('/api/status/summary').then(r => r.json()).then(res => {
+            const data = res.data || { online_count: 0, total_count: 0 };
+            document.getElementById('stat-devices').innerText = data.total_count;
+            const onlineEl = document.getElementById('stat-online');
+            onlineEl.innerText = data.online_count;
+            onlineEl.classList.toggle('text-warning', data.online_count < data.total_count);
+            onlineEl.classList.toggle('text-success', data.online_count >= data.total_count);
+        });
+        fetch('/api/backup/files').then(r => r.json()).then(res => {
+            document.getElementById('stat-backups').innerText = res.data ? res.data.length : 0;
+        });
+        fetch('/api/deploy/meta').then(r => r.json()).then(res => {
+            document.getElementById('stat-templates').innerText = res.templates ? res.templates.length : 0;
+        });
+    }
+
+    function loadLogs() {
+        fetch('/api/logs').then(res => res.json()).then(res => {
+            const logs = res.data || [];
+            const tbody = document.getElementById('log-table-body');
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">暂无操作记录</td></tr>';
+                return;
+            }
+            tbody.innerHTML = logs.map(log => `
+                <tr>
+                    <td class="text-muted">${log.time}</td>
+                    <td>${log.action}</td>
+                    <td><span class="badge ${(log.result.includes('成功')|| log.result.includes('完成'))? 'bg-success' : 'bg-danger'}">${log.result}</span></td>
+                </tr>
+            `).join('');
+        });
+    }
+{% endblock %}
