@@ -131,10 +131,18 @@
         const tplObj = metaData.templates.find(t => t.filename === selected);
         if (tplObj && tplObj.fields.length > 0) {
             tplObj.fields.forEach(f => {
+                let inputHtml;
+                const req = f.required ? 'required' : '';
+                if (f.type === 'select' && f.options) {
+                    const opts = f.options.map(o => `<option value="${o}">${o || '不设置'}</option>`).join('');
+                    inputHtml = `<select class="form-select form-select-sm var-input" data-key="${f.name}" ${req}>${opts}</select>`;
+                } else {
+                    inputHtml = `<input type="${f.type}" class="form-control form-control-sm var-input" data-key="${f.name}" ${req}>`;
+                }
                 container.innerHTML += `
                     <div class="col-md-3">
                         <label class="form-label text-secondary" style="font-size: 12px;">${f.label}</label>
-                        <input type="${f.type}" class="form-control form-control-sm var-input" data-key="${f.name}" required>
+                        ${inputHtml}
                     </div>
                 `;
             });
@@ -150,8 +158,10 @@
         let varsDict = {};
         let inputs = document.querySelectorAll('.var-input');
         for (let input of inputs) {
-            if(!input.value) return alert("请填写完整的模板参数！");
-            varsDict[input.getAttribute('data-key')] = input.value;
+            const key = input.getAttribute('data-key');
+            const val = input.value.trim();
+            if (input.hasAttribute('required') && !val) return alert("请填写必填项！");
+            if (val) varsDict[key] = val;
         }
 
         const btn = document.getElementById('btn-deploy');

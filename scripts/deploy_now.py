@@ -119,7 +119,7 @@ def run_deploy(template_file, target_hosts, extra_vars_dict):
     通过 ansible-playbook 命令运行 deploy_config.yml，该 Playbook 会：
     1. 读取指定的 Jinja2 模板
     2. 使用传入的变量渲染模板，生成设备配置命令
-    3. 通过 huawei.ce_config 模块将配置推送到目标设备
+    3. 通过 cli_command 模块将配置推送到目标设备
     4. 执行 save 命令保存配置
 
     参数:
@@ -128,7 +128,7 @@ def run_deploy(template_file, target_hosts, extra_vars_dict):
         extra_vars_dict: 模板变量字典（如 {'interface_name': 'GE0/0/1', 'ip_address': '10.1.1.1'}）
 
     返回:
-        bool: True 表示下发成功，False 表示下发失败
+        tuple: (bool, str) — (是否成功, 完整输出信息)
     """
     # 合并基础变量和用户自定义变量
     extra_vars = {
@@ -145,8 +145,69 @@ def run_deploy(template_file, target_hosts, extra_vars_dict):
         "--vault-password-file", VAULT_PASS_FILE  # Vault 密码
     ]
     print(f"\n🚀 开始下发配置到 [{target_hosts}]...")
-    result = subprocess.run(cmd, cwd=PROJECT_ROOT)
-    return result.returncode == 0
+    result = subprocess.run(cmd, cwd=PROJECT_ROOT, capture_output=True, text=True)
+    full_output = result.stdout + ("\n" + result.stderr if result.stderr else "")
+
+    # 尝试解析具体失败原因
+    if result.returncode != 0:
+        error_reason = parse_deploy_error(full_output)
+        print(f"\n❌ 下发失败: {error_reason}")
+    else:
+        print(f"\n✅ 下发成功")
+
+    # 打印完整输出供调试
+    print(full_output)
+    return result.returncode == 0, full_output
+
+
+def parse_deploy_error(output):
+    """
+    从 Ansible 输出中提取关键错误信息，给出可读的失败原因。
+
+    参数:
+        output: Ansible 完整输出文本
+
+    返回:
+        str: 人类可读的失败原因
+    """
+    import re
+    output_lower = output.lower()
+
+    # 模板渲染失败（Jinja2 变量未定义）
+    if 'undefined variable' in output_lower or 'is undefined' in output_lower:
+        match = re.search(r"'(\w+)' is undefined", output)
+        var_name = match.group(1) if match else "未知变量"
+        return f"模板变量未定义: {var_name}。请检查是否填写了所有必填参数"
+
+    # 模板文件不存在
+    if 'template not found' in output_lower or 'could not find or access' in output_lower:
+        return f"模板文件不存在，请检查模板名称是否正确"
+
+    # 设备不可达
+    if 'unreachable' in output_lower:
+        match = re.search(r'(\d+)\s+unreachable', output)
+        count = match.group(1) if match else "部分"
+        return f"{count} 台设备不可达，请检查设备是否在线"
+
+    # SSH 连接失败
+    if 'authentication failed' in output_lower or 'permission denied' in output_lower:
+        return "SSH 认证失败，请检查设备用户名和密码"
+
+    if 'timed out' in output_lower or 'timeout' in output_lower:
+        return "SSH 连接超时，请检查设备IP是否可达"
+
+    # Ansible Vault 解密失败
+    if 'vault password' in output_lower or 'decrypt' in output_lower:
+        return "Vault 密码解密失败，请检查 vault_pass.txt"
+
+    # 任务执行失败
+    if 'failed=' in output:
+        match = re.search(r'failed=(\d+)', output)
+        count = match.group(1) if match else "部分"
+        return f"{count} 台设备执行失败，请查看下方日志了解详情"
+
+    # 兜底
+    return "请查看下方日志了解详情"
 
 
 def main():
@@ -177,7 +238,7 @@ def main():
         # 下发前备份
         run_pre_deploy_backup(target=args.target, api_mode=True)
         # 执行下发
-        success = run_deploy(args.template, args.target, vars_dict)
+        success, output = run_deploy(args.template, args.target, vars_dict)
         if success:
             print("\n✅ 配置下发完成")
             # 下发成功后自动备份新配置
@@ -219,7 +280,8 @@ def main():
 
     # 执行下发流程：备份 → 下发 → 备份
     run_pre_deploy_backup(target=target_hosts)
-    if run_deploy(template_file, target_hosts, vars_dict):
+    success, output = run_deploy(template_file, target_hosts, vars_dict)
+    if success:
         print("\n✅ 配置下发完成")
         print("📦 下发后备份新配置...")
         subprocess.run([sys.executable, BACKUP_SCRIPT, '--target', target_hosts])

@@ -13,7 +13,6 @@
     - name: 渲染并显示将要下发的配置（预览）
       debug:
         msg: "将要下发的配置命令：\n{{ config_commands }}"
-      run_once: true
 
     - name: 逐行下发配置命令
       ansible.netcommon.cli_command:
