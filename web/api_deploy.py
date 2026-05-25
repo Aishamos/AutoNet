@@ -42,8 +42,8 @@ deploy_bp = Blueprint('deploy_api', __name__)
 # 定义各模板所需的变量字段，供前端动态渲染表单
 TEMPLATE_FIELDS = {
     "acl.j2": [
-        {"name": "acl_number", "label": "ACL 编号 (如 3000)", "type": "number", "required": True},
-        {"name": "rule_id", "label": "规则 ID (如 5)", "type": "number", "required": True},
+        {"name": "acl_number", "label": "ACL 编号 (如 3000)", "type": "text", "required": True},
+        {"name": "rule_id", "label": "规则 ID (如 5)", "type": "text", "required": True},
         {"name": "source_ip", "label": "源 IP (如 192.168.1.0)", "type": "text", "required": True},
         {"name": "source_wildcard", "label": "通配符掩码 (如 0.0.0.255)", "type": "text", "required": True}
     ],
@@ -53,13 +53,12 @@ TEMPLATE_FIELDS = {
         {"name": "mask", "label": "子网掩码 (如 255.255.255.0)", "type": "text", "required": True}
     ],
     "vlan.j2": [
-        {"name": "vlan_id", "label": "VLAN ID (如 10)", "type": "number", "required": True},
-        {"name": "vlan_description", "label": "VLAN 描述", "type": "text", "required": False},
+        {"name": "vlan_id", "label": "VLAN ID (如 10)", "type": "text", "required": False},
         {"name": "vlanif_ip", "label": "VLANIF IP 地址 (如 192.168.10.1)", "type": "text", "required": False},
         {"name": "vlanif_mask", "label": "VLANIF 子网掩码 (如 255.255.255.0)", "type": "text", "required": False},
         {"name": "port_name", "label": "接口名 (如 GigabitEthernet0/0/1)", "type": "text", "required": False},
-        {"name": "port_link_type", "label": "接口类型", "type": "select", "options": ["", "access", "trunk"], "required": False},
-        {"name": "port_default_vlan", "label": "Access 默认 VLAN", "type": "number", "required": False},
+        {"name": "port_link_type", "label": "接口类型", "type": "select", "options": ["access", "trunk"], "required": False},
+        {"name": "port_default_vlan", "label": "Access 默认 VLAN", "type": "text", "required": False},
         {"name": "trunk_allowed_vlans", "label": "Trunk 允许 VLAN (如 10,20,30)", "type": "text", "required": False}
     ]
 }

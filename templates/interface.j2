@@ -1,8 +1,8 @@
 {% if interface_name is defined and ip_address is defined and mask is defined %}
 system-view
 interface {{ interface_name }}
- ip address {{ ip_address }} {{ mask }}
- undo shutdown
+ip address {{ ip_address }} {{ mask }}
+undo shutdown
 return
 {% else %}
 # 错误：缺少必要变量 interface_name, ip_address, mask

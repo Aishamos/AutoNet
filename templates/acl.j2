@@ -1,7 +1,7 @@
 {% if acl_number is defined and rule_id is defined and source_ip is defined and source_wildcard is defined %}
 system-view
 acl {{ acl_number }}
- rule {{ rule_id }} permit source {{ source_ip }} {{ source_wildcard }}
+rule {{ rule_id }} permit source {{ source_ip }} {{ source_wildcard }}
 return
 {% else %}
 # 错误：缺少必要变量 acl_number, rule_id, source_ip, source_wildcard

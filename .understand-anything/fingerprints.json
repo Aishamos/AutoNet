@@ -1,0 +1,1815 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "ee5df1c15a20a0ac2ab6b9dda177bb40ce751596",
+  "generatedAt": "2026-05-25T03:22:29.480Z",
+  "files": {
+    ".understand-anything/.understandignore": {
+      "filePath": ".understand-anything/.understandignore",
+      "contentHash": "71e2319f9fe973bc7e937fba908c5cdd5b34a39a9358a6e90c6808ca8b320b25",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 30,
+      "hasStructuralAnalysis": false
+    },
+    ".understand-anything/config.json": {
+      "filePath": ".understand-anything/config.json",
+      "contentHash": "57ad357f8d13db85695632a844b96ca225ba077d44acc0193195a7ae02097dd9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "ansible.cfg": {
+      "filePath": "ansible.cfg",
+      "contentHash": "c27fa550589de3667d4ec1e52240d8aa1ba5011a984f316e14b6b8de1389cf64",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": false
+    },
+    "deploy.sh": {
+      "filePath": "deploy.sh",
+      "contentHash": "5d490b540eb7429458fe14cf47ae1ada4e4953aea9505e51c553aac6b66a1993",
+      "functions": [
+        {
+          "name": "check_root",
+          "params": [],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "install_system_deps",
+          "params": [],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "create_venv",
+          "params": [],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "install_python_deps",
+          "params": [],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "init_dirs",
+          "params": [],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "config_ansible",
+          "params": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "verify_deploy",
+          "params": [],
+          "exported": false,
+          "lineCount": 32
+        },
+        {
+          "name": "start_service",
+          "params": [],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "main",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 168,
+      "hasStructuralAnalysis": true
+    },
+    "exports/11.yml": {
+      "filePath": "exports/11.yml",
+      "contentHash": "535fa30d7e25dd8a49f1536779734ec8286108d115da5045d77f3b4185d8f790",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "exports/text.yml": {
+      "filePath": "exports/text.yml",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "inventory.yml": {
+      "filePath": "inventory.yml",
+      "contentHash": "1aa884381e94d5992404a454f88c3dd03fd3e4b2fbd854e950ee8619abcb636a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "playbooks/backup_config.yml": {
+      "filePath": "playbooks/backup_config.yml",
+      "contentHash": "fe2ea55412632d2b08b47f67a5d2720d2e505e4c9e4d10e13ca2a7181024a583",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "playbooks/deploy_config.yml": {
+      "filePath": "playbooks/deploy_config.yml",
+      "contentHash": "a096cf52ec5e97c91841c3b78b78ac780823ff7bb943d25e862e281f22a8cd83",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
+    "playbooks/get_current_config.yml": {
+      "filePath": "playbooks/get_current_config.yml",
+      "contentHash": "30baa0be073320ce7aee46f331e41d6afbf18f65b67e4b245f504da26c811e5a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "1d545a83c4c37ae6a3fe83a394d0241b663c5443d70ab0691b4f5ca63d5c88c8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 202,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/__init__.py": {
+      "filePath": "scripts/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/backup_now.py": {
+      "filePath": "scripts/backup_now.py",
+      "contentHash": "13be12deaf7ccc2bdf13dc1ce26bfba725eba0a27636528b31e265ace5cb79b7",
+      "functions": [
+        {
+          "name": "run_backup",
+          "params": [
+            "target"
+          ],
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "git_commit_backup",
+          "params": [],
+          "exported": true,
+          "lineCount": 58
+        },
+        {
+          "name": "main",
+          "params": [],
+          "exported": true,
+          "lineCount": 27
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "glob",
+          "specifiers": [
+            "glob"
+          ]
+        },
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        }
+      ],
+      "exports": [
+        "run_backup",
+        "git_commit_backup",
+        "main"
+      ],
+      "totalLines": 156,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/config_check.py": {
+      "filePath": "scripts/config_check.py",
+      "contentHash": "56f45aa78591a9e575d42084b8245579749217f729db7b5e9248c93669f5e8a8",
+      "functions": [
+        {
+          "name": "get_device_current_config",
+          "params": [
+            "device_alias"
+          ],
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "generate_diff_report",
+          "params": [
+            "device_alias",
+            "backup_file",
+            "current_config"
+          ],
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "check_drift",
+          "params": [
+            "device_alias"
+          ],
+          "exported": true,
+          "lineCount": 68
+        },
+        {
+          "name": "do_rollback",
+          "params": [
+            "device_alias",
+            "backup_file"
+          ],
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "rollback_device",
+          "params": [
+            "device_alias",
+            "backup_file",
+            "api_mode"
+          ],
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "rollback_all_devices",
+          "params": [
+            "api_mode"
+          ],
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "main",
+          "params": [],
+          "exported": true,
+          "lineCount": 48
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "difflib",
+          "specifiers": [
+            "difflib"
+          ]
+        },
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "utils",
+          "specifiers": [
+            "load_inventory",
+            "list_backups_for_device",
+            "get_latest_backup",
+            "PROJECT_ROOT",
+            "INVENTORY_PATH",
+            "VAULT_PASS_FILE",
+            "BACKUP_DIR"
+          ]
+        }
+      ],
+      "exports": [
+        "get_device_current_config",
+        "generate_diff_report",
+        "check_drift",
+        "do_rollback",
+        "rollback_device",
+        "rollback_all_devices",
+        "main"
+      ],
+      "totalLines": 340,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/cron_backup.sh": {
+      "filePath": "scripts/cron_backup.sh",
+      "contentHash": "1760d98c8751537314fa0a33937fc8bfdde72a50a9803b95aaa1211e5bf494fe",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/deploy_now.py": {
+      "filePath": "scripts/deploy_now.py",
+      "contentHash": "0078631cf02a000e4d8bdb3074c55ddc4935b6ebf859f75a93b5b1ae7953e7a3",
+      "functions": [
+        {
+          "name": "list_templates",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "get_template_vars_interactive",
+          "params": [
+            "template_name"
+          ],
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "run_pre_deploy_backup",
+          "params": [
+            "target",
+            "api_mode"
+          ],
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "run_deploy",
+          "params": [
+            "template_file",
+            "target_hosts",
+            "extra_vars_dict"
+          ],
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "main",
+          "params": [],
+          "exported": true,
+          "lineCount": 76
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        }
+      ],
+      "exports": [
+        "list_templates",
+        "get_template_vars_interactive",
+        "run_pre_deploy_backup",
+        "run_deploy",
+        "main"
+      ],
+      "totalLines": 232,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/generate_report.py": {
+      "filePath": "scripts/generate_report.py",
+      "contentHash": "d41d0b9e46af1f0ca5590b5a0290487c31d7ab7a423ed0d55ac1d639d7b4d1ac",
+      "functions": [
+        {
+          "name": "get_latest_backup_info",
+          "params": [
+            "device_alias"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "parse_interfaces",
+          "params": [
+            "output"
+          ],
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "parse_routes",
+          "params": [
+            "output"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "gather_device_metrics",
+          "params": [
+            "ip",
+            "user",
+            "password"
+          ],
+          "exported": true,
+          "lineCount": 83
+        },
+        {
+          "name": "generate_alerts",
+          "params": [
+            "devices"
+          ],
+          "exported": true,
+          "lineCount": 97
+        },
+        {
+          "name": "generate_suggestions",
+          "params": [
+            "devices",
+            "alerts"
+          ],
+          "exported": true,
+          "lineCount": 70
+        },
+        {
+          "name": "generate_html_report",
+          "params": [],
+          "exported": true,
+          "lineCount": 106
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "utils",
+          "specifiers": [
+            "load_inventory",
+            "ping_check",
+            "list_backups_for_device",
+            "BACKUP_DIR"
+          ]
+        }
+      ],
+      "exports": [
+        "get_latest_backup_info",
+        "parse_interfaces",
+        "parse_routes",
+        "gather_device_metrics",
+        "generate_alerts",
+        "generate_suggestions",
+        "generate_html_report"
+      ],
+      "totalLines": 511,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/logs_manager.py": {
+      "filePath": "scripts/logs_manager.py",
+      "contentHash": "18450e5b34ee43bba536d3869eb4d73f5ff4817193f72ed20663e1d67926d921",
+      "functions": [
+        {
+          "name": "write_log",
+          "params": [
+            "action",
+            "result"
+          ],
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "get_all_logs",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "utils",
+          "specifiers": [
+            "ensure_json_file"
+          ]
+        }
+      ],
+      "exports": [
+        "write_log",
+        "get_all_logs"
+      ],
+      "totalLines": 88,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/manage_inventory.py": {
+      "filePath": "scripts/manage_inventory.py",
+      "contentHash": "822480bc4c483dc4702553c80ebeeda72cf28b05a3717e5905292e970f446c38",
+      "functions": [
+        {
+          "name": "save_inventory",
+          "params": [
+            "data",
+            "use_vault"
+          ],
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "verify_device_connection",
+          "params": [
+            "ip",
+            "user",
+            "password"
+          ],
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "list_devices",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "add_device",
+          "params": [],
+          "exported": true,
+          "lineCount": 51
+        },
+        {
+          "name": "delete_device",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "check_connectivity",
+          "params": [],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "export_inventory",
+          "params": [],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "import_inventory",
+          "params": [],
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "main",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "shutil",
+          "specifiers": [
+            "shutil"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "utils",
+          "specifiers": [
+            "load_inventory",
+            "PROJECT_ROOT",
+            "INVENTORY_PATH",
+            "VAULT_PASS_FILE",
+            "BACKUP_DIR"
+          ]
+        }
+      ],
+      "exports": [
+        "save_inventory",
+        "verify_device_connection",
+        "list_devices",
+        "add_device",
+        "delete_device",
+        "check_connectivity",
+        "export_inventory",
+        "import_inventory",
+        "main"
+      ],
+      "totalLines": 306,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/monitor.py": {
+      "filePath": "scripts/monitor.py",
+      "contentHash": "b780befaac06cdc71ab750eda46bd6ce2d32a0c896b70db75e950f7061ecde0f",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "utils",
+          "specifiers": [
+            "get_decrypted_devices",
+            "ping_check"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/rollback_netmiko.py": {
+      "filePath": "scripts/rollback_netmiko.py",
+      "contentHash": "5fd8c90f3001748a15caeb838deb71a4fcfa1443ea079e151da254b4c3554cd3",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "exported": true,
+          "lineCount": 80
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "utils",
+          "specifiers": [
+            "load_inventory"
+          ]
+        }
+      ],
+      "exports": [
+        "main"
+      ],
+      "totalLines": 122,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/utils.py": {
+      "filePath": "scripts/utils.py",
+      "contentHash": "ac08d70357815ee10e1dc5d28e85c662e14401aacedb3100d153dfd9b510d4a3",
+      "functions": [
+        {
+          "name": "load_inventory",
+          "params": [
+            "use_vault"
+          ],
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "get_decrypted_devices",
+          "params": [],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "ping_check",
+          "params": [
+            "ip",
+            "count",
+            "timeout"
+          ],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "list_backups_for_device",
+          "params": [
+            "device_alias"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "get_latest_backup",
+          "params": [
+            "device_alias"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "ensure_json_file",
+          "params": [
+            "filepath"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "glob",
+          "specifiers": [
+            "glob"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        }
+      ],
+      "exports": [
+        "load_inventory",
+        "get_decrypted_devices",
+        "ping_check",
+        "list_backups_for_device",
+        "get_latest_backup",
+        "ensure_json_file"
+      ],
+      "totalLines": 153,
+      "hasStructuralAnalysis": true
+    },
+    "templates/acl.j2": {
+      "filePath": "templates/acl.j2",
+      "contentHash": "c38a388f3d82058b7bb596edd518c19732a0331c9ef8749a8ca11472b8ed6432",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "templates/interface.j2": {
+      "filePath": "templates/interface.j2",
+      "contentHash": "634926b7026ec1c6a174346ac868dc6677ddc14fb689244a624c9c24c7b85d19",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": false
+    },
+    "templates/report_template.html": {
+      "filePath": "templates/report_template.html",
+      "contentHash": "4447c499c0b457842c36fb154ea4f6b16ac58aa3c76f25f1af6af5a07c140034",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 401,
+      "hasStructuralAnalysis": false
+    },
+    "templates/vlan.j2": {
+      "filePath": "templates/vlan.j2",
+      "contentHash": "34304dd79e2abbfba1c0505caaf23023466ddcff2d1e8d768e0de4d361a6fd24",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": false
+    },
+    "vault_pass.txt": {
+      "filePath": "vault_pass.txt",
+      "contentHash": "4754617af62e96af95d6419a0153d6310459ed4792292c0c79205d7b1c20edac",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "web/__init__.py": {
+      "filePath": "web/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "web/api_backup.py": {
+      "filePath": "web/api_backup.py",
+      "contentHash": "21b8417f86b3daf4ec13fcc27aabf9af0e915f35122ec217c7637fc37da03d75",
+      "functions": [
+        {
+          "name": "list_backups",
+          "params": [],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "run_backup",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "manual_commit",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "download_backup",
+          "params": [
+            "filename"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "get_current_crontab",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "get_cron",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "set_cron",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "delete_cron",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "flask",
+          "specifiers": [
+            "Blueprint",
+            "jsonify",
+            "request",
+            "send_from_directory"
+          ]
+        }
+      ],
+      "exports": [
+        "list_backups",
+        "run_backup",
+        "manual_commit",
+        "download_backup",
+        "get_current_crontab",
+        "get_cron",
+        "set_cron",
+        "delete_cron"
+      ],
+      "totalLines": 116,
+      "hasStructuralAnalysis": true
+    },
+    "web/api_check_rollback.py": {
+      "filePath": "web/api_check_rollback.py",
+      "contentHash": "9ae7fed3b2029dde754ed960a32878454ddeda6bef7f9aa3b7bf8e017d4f5a68",
+      "functions": [
+        {
+          "name": "get_device_backups",
+          "params": [
+            "device_alias"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "run_action",
+          "params": [],
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "download_report",
+          "params": [
+            "filename"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "flask",
+          "specifiers": [
+            "Blueprint",
+            "jsonify",
+            "request"
+          ]
+        },
+        {
+          "source": "utils",
+          "specifiers": [
+            "list_backups_for_device"
+          ]
+        }
+      ],
+      "exports": [
+        "get_device_backups",
+        "run_action",
+        "download_report"
+      ],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "web/api_deploy.py": {
+      "filePath": "web/api_deploy.py",
+      "contentHash": "a0fa8cc478bd5990149c6250e0dadae6e5fd0ebae24c91bddb0bea798074e54e",
+      "functions": [
+        {
+          "name": "parse_ansible_recap",
+          "params": [
+            "stdout"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "get_deploy_meta",
+          "params": [],
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "run_deploy",
+          "params": [],
+          "exported": true,
+          "lineCount": 48
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "flask",
+          "specifiers": [
+            "Blueprint",
+            "jsonify",
+            "request"
+          ]
+        },
+        {
+          "source": "manage_inventory",
+          "specifiers": [
+            "load_inventory"
+          ]
+        }
+      ],
+      "exports": [
+        "parse_ansible_recap",
+        "get_deploy_meta",
+        "run_deploy"
+      ],
+      "totalLines": 133,
+      "hasStructuralAnalysis": true
+    },
+    "web/api_drift_history.py": {
+      "filePath": "web/api_drift_history.py",
+      "contentHash": "b7d5fb47510381e9cae11bd7536512fe09ed9414d8c4b91dd9380845eab8f97b",
+      "functions": [
+        {
+          "name": "get_drift_history",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "add_drift_history",
+          "params": [],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "flask",
+          "specifiers": [
+            "Blueprint",
+            "request",
+            "jsonify"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "utils",
+          "specifiers": [
+            "ensure_json_file"
+          ]
+        }
+      ],
+      "exports": [
+        "get_drift_history",
+        "add_drift_history"
+      ],
+      "totalLines": 51,
+      "hasStructuralAnalysis": true
+    },
+    "web/api_inventory.py": {
+      "filePath": "web/api_inventory.py",
+      "contentHash": "50ca35e4b955bb52b3a4e8e457d74bdccea3e31c42450ad299805af59f7224f8",
+      "functions": [
+        {
+          "name": "get_devices",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "add_device",
+          "params": [],
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "delete_device",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "check_connectivity",
+          "params": [],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "export_inventory",
+          "params": [],
+          "exported": true,
+          "lineCount": 21
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "flask",
+          "specifiers": [
+            "Blueprint",
+            "request",
+            "jsonify",
+            "send_file"
+          ]
+        },
+        {
+          "source": "manage_inventory",
+          "specifiers": [
+            "load_inventory",
+            "save_inventory",
+            "verify_device_connection"
+          ]
+        }
+      ],
+      "exports": [
+        "get_devices",
+        "add_device",
+        "delete_device",
+        "check_connectivity",
+        "export_inventory"
+      ],
+      "totalLines": 128,
+      "hasStructuralAnalysis": true
+    },
+    "web/api_logs.py": {
+      "filePath": "web/api_logs.py",
+      "contentHash": "1baf9ee150ae98d57553098323d54f48682357fb7b792afada71985ba8c34650",
+      "functions": [
+        {
+          "name": "add_log_api",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "get_logs_api",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "flask",
+          "specifiers": [
+            "Blueprint",
+            "request",
+            "jsonify"
+          ]
+        },
+        {
+          "source": "logs_manager",
+          "specifiers": [
+            "write_log",
+            "get_all_logs"
+          ]
+        }
+      ],
+      "exports": [
+        "add_log_api",
+        "get_logs_api"
+      ],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "web/api_report.py": {
+      "filePath": "web/api_report.py",
+      "contentHash": "b17b3bf9c681fe5b191dd9fe4f77185e5447949a659188bfce80b174a44df896",
+      "functions": [
+        {
+          "name": "list_reports",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "generate_report",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "view_report",
+          "params": [
+            "filename"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "flask",
+          "specifiers": [
+            "Blueprint",
+            "jsonify",
+            "send_from_directory"
+          ]
+        }
+      ],
+      "exports": [
+        "list_reports",
+        "generate_report",
+        "view_report"
+      ],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "web/api_status.py": {
+      "filePath": "web/api_status.py",
+      "contentHash": "9f375be977d945a0d03312409d2e0823aae6b69425622023d68b1eef0567dc67",
+      "functions": [
+        {
+          "name": "init_status_monitor",
+          "params": [
+            "socketio"
+          ],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "get_stats",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "get_device_status",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "flask",
+          "specifiers": [
+            "Blueprint",
+            "jsonify"
+          ]
+        },
+        {
+          "source": "apscheduler.schedulers.background",
+          "specifiers": [
+            "BackgroundScheduler"
+          ]
+        },
+        {
+          "source": "utils",
+          "specifiers": [
+            "get_decrypted_devices",
+            "ping_check"
+          ]
+        }
+      ],
+      "exports": [
+        "init_status_monitor",
+        "get_stats",
+        "get_device_status"
+      ],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "web/app.py": {
+      "filePath": "web/app.py",
+      "contentHash": "411ced93403b89b2b21fc5e6a9afa244d6066621b93fa75fce41138c0546b20f",
+      "functions": [
+        {
+          "name": "index",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "login",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "dashboard",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "inventory",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "backup",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "deploy",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "rollback",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "report",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "flask",
+          "specifiers": [
+            "Flask",
+            "render_template",
+            "request",
+            "redirect",
+            "url_for",
+            "flash"
+          ]
+        },
+        {
+          "source": "flask_socketio",
+          "specifiers": [
+            "SocketIO"
+          ]
+        },
+        {
+          "source": "api_inventory",
+          "specifiers": [
+            "inventory_bp"
+          ]
+        },
+        {
+          "source": "api_backup",
+          "specifiers": [
+            "backup_bp"
+          ]
+        },
+        {
+          "source": "api_deploy",
+          "specifiers": [
+            "deploy_bp"
+          ]
+        },
+        {
+          "source": "api_check_rollback",
+          "specifiers": [
+            "check_bp"
+          ]
+        },
+        {
+          "source": "api_report",
+          "specifiers": [
+            "report_bp"
+          ]
+        },
+        {
+          "source": "api_logs",
+          "specifiers": [
+            "logs_bp"
+          ]
+        },
+        {
+          "source": "api_status",
+          "specifiers": [
+            "status_bp",
+            "init_status_monitor"
+          ]
+        },
+        {
+          "source": "api_drift_history",
+          "specifiers": [
+            "drift_bp"
+          ]
+        }
+      ],
+      "exports": [
+        "index",
+        "login",
+        "dashboard",
+        "inventory",
+        "backup",
+        "deploy",
+        "rollback",
+        "report"
+      ],
+      "totalLines": 101,
+      "hasStructuralAnalysis": true
+    },
+    "web/templates/backup.html": {
+      "filePath": "web/templates/backup.html",
+      "contentHash": "01ceaa6b3954c08963410f22e4ae03305a6e0fae79fc27270b241b1151993b45",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 206,
+      "hasStructuralAnalysis": false
+    },
+    "web/templates/base.html": {
+      "filePath": "web/templates/base.html",
+      "contentHash": "7cf8ee3117a4124c7119c9502b91e12f71ac65cdd3c91622014125a64f953f89",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 136,
+      "hasStructuralAnalysis": false
+    },
+    "web/templates/dashboard.html": {
+      "filePath": "web/templates/dashboard.html",
+      "contentHash": "fd5658dadedac8bf494abb685c6890353531c9eb04119426da623308dfb4b126",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 133,
+      "hasStructuralAnalysis": false
+    },
+    "web/templates/deploy.html": {
+      "filePath": "web/templates/deploy.html",
+      "contentHash": "4bbcb436ea8581d8a3f402c6893f7e882a343a7f70b3dfa498ea0f2146aaa458",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 192,
+      "hasStructuralAnalysis": false
+    },
+    "web/templates/inventory.html": {
+      "filePath": "web/templates/inventory.html",
+      "contentHash": "2021517c06003331eb9dc2b2775f8b033e9be104af54d59f8097491742192202",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 232,
+      "hasStructuralAnalysis": false
+    },
+    "web/templates/login.html": {
+      "filePath": "web/templates/login.html",
+      "contentHash": "b40cc919f16fcccc54997e68cde3122749a04af1be9a1c9ca5a269924321d934",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 77,
+      "hasStructuralAnalysis": false
+    },
+    "web/templates/report.html": {
+      "filePath": "web/templates/report.html",
+      "contentHash": "789d6ca9c426c4960f375e04109be4183b69f10e7643406ed40d056d30248518",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 103,
+      "hasStructuralAnalysis": false
+    },
+    "web/templates/rollback.html": {
+      "filePath": "web/templates/rollback.html",
+      "contentHash": "828efb1841ef0339757caae3bd29824a49193dbce31b1a610b153157cf5aa146",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 337,
+      "hasStructuralAnalysis": false
+    }
+  }
+}
