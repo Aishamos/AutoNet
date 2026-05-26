@@ -134,12 +134,12 @@
                 let inputHtml;
                 const req = f.required ? 'required' : '';
                 const ph = f.required ? '必填' : '';
-                const hiddenByDefault = (f.name === 'vlanif_ip' || f.name === 'vlanif_mask' || f.name === 'port_link_type' || f.name === 'port_default_vlan' || f.name === 'trunk_allowed_vlans');
+                const hiddenByDefault = (f.name === 'vlanif_ip' || f.name === 'vlanif_mask' || f.name === 'port_link_type' || f.name === 'port_default_vlan' || f.name === 'trunk_allowed_vlans' || f.name === 'apply_direction');
                 if (f.type === 'select' && f.options) {
                     const opts = f.options.map(o => `<option value="${o}">${o || (ph ? ph : '不设置')}</option>`).join('');
                     inputHtml = `<select class="form-select form-select-sm var-input" data-key="${f.name}" ${f.name === 'port_link_type' ? 'onchange="toggleVlanPortFields()"' : ''} ${req}>${opts}</select>`;
                 } else {
-                    const extraEvent = (f.name === 'vlan_id' || f.name === 'port_name') ? 'oninput="toggleVlanPortFields()"' : '';
+                    const extraEvent = (f.name === 'vlan_id' || f.name === 'port_name' || f.name === 'apply_interface') ? 'oninput="toggleVlanPortFields()"' : '';
                     inputHtml = `<input type="${f.type}" class="form-control form-control-sm var-input" data-key="${f.name}" ${ph ? `placeholder="${ph}"` : ''} ${extraEvent} ${req}>`;
                 }
                 container.innerHTML += `
@@ -164,22 +164,29 @@
         // 接口名 → 接口类型 → Access/Trunk
         const nameInput = document.querySelector('[data-key="port_name"]');
         const sel = document.querySelector('[data-key="port_link_type"]');
-        if (!nameInput || !sel) return;
-        const hasPort = nameInput.value.trim() !== '';
-        const linkField = document.querySelector('[data-field="port_link_type"]');
-        const accField = document.querySelector('[data-field="port_default_vlan"]');
-        const trkField = document.querySelector('[data-field="trunk_allowed_vlans"]');
-        if (!hasPort) {
-            sel.value = 'access';
-            if (linkField) linkField.style.display = 'none';
-            if (accField) accField.style.display = 'none';
-            if (trkField) trkField.style.display = 'none';
-            return;
+        if (nameInput && sel) {
+            const hasPort = nameInput.value.trim() !== '';
+            const linkField = document.querySelector('[data-field="port_link_type"]');
+            const accField = document.querySelector('[data-field="port_default_vlan"]');
+            const trkField = document.querySelector('[data-field="trunk_allowed_vlans"]');
+            if (!hasPort) {
+                sel.value = 'access';
+                if (linkField) linkField.style.display = 'none';
+                if (accField) accField.style.display = 'none';
+                if (trkField) trkField.style.display = 'none';
+            } else {
+                if (linkField) linkField.style.display = '';
+                const val = sel.value;
+                if (accField) accField.style.display = val === 'access' ? '' : 'none';
+                if (trkField) trkField.style.display = val === 'trunk' ? '' : 'none';
+            }
         }
-        if (linkField) linkField.style.display = '';
-        const val = sel.value;
-        if (accField) accField.style.display = val === 'access' ? '' : 'none';
-        if (trkField) trkField.style.display = val === 'trunk' ? '' : 'none';
+
+        // ACL: 应用到接口 → 方向
+        const aclIntf = document.querySelector('[data-key="apply_interface"]');
+        const hasAclIntf = aclIntf && aclIntf.value.trim() !== '';
+        const dirField = document.querySelector('[data-field="apply_direction"]');
+        if (dirField) dirField.style.display = hasAclIntf ? '' : 'none';
     }
 
     function executeDeploy() {

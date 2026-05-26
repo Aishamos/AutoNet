@@ -44,8 +44,13 @@ TEMPLATE_FIELDS = {
     "acl.j2": [
         {"name": "acl_number", "label": "ACL 编号 (如 3000)", "type": "text", "required": True},
         {"name": "rule_id", "label": "规则 ID (如 5)", "type": "text", "required": True},
+        {"name": "acl_action", "label": "动作", "type": "select", "options": ["permit - 允许", "deny - 拒绝"], "required": True},
         {"name": "source_ip", "label": "源 IP (如 192.168.1.0)", "type": "text", "required": True},
-        {"name": "source_wildcard", "label": "通配符掩码 (如 0.0.0.255)", "type": "text", "required": True}
+        {"name": "source_wildcard", "label": "源通配符掩码 (如 0.0.0.255)", "type": "text", "required": True},
+        {"name": "dest_ip", "label": "目的 IP", "type": "text", "required": False},
+        {"name": "dest_wildcard", "label": "目的通配符掩码", "type": "text", "required": False},
+        {"name": "apply_interface", "label": "应用到接口 (如 GigabitEthernet0/0/1)", "type": "text", "required": False},
+        {"name": "apply_direction", "label": "方向", "type": "select", "options": ["inbound", "outbound"], "required": False}
     ],
     "interface.j2": [
         {"name": "interface_name", "label": "接口名 (如 GigabitEthernet0/0/1)", "type": "text", "required": True},

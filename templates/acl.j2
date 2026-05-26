@@ -1,8 +1,16 @@
 {% if acl_number is defined and rule_id is defined and source_ip is defined and source_wildcard is defined %}
 system-view
 acl {{ acl_number }}
-rule {{ rule_id }} permit source {{ source_ip }} {{ source_wildcard }}
+{% set dest_part = '' %}
+{% if dest_ip is defined and dest_ip and dest_wildcard is defined and dest_wildcard %}
+{% set dest_part = ' destination ' ~ dest_ip ~ ' ' ~ dest_wildcard %}
+{% endif %}
+rule {{ rule_id }} {{ acl_action.split(' ')[0] | default('permit') }} ip source {{ source_ip }} {{ source_wildcard }}{{ dest_part }}
 return
-{% else %}
-# 错误：缺少必要变量 acl_number, rule_id, source_ip, source_wildcard
+{% endif %}
+{% if apply_interface is defined and apply_interface and apply_direction is defined and apply_direction %}
+system-view
+interface {{ apply_interface }}
+traffic-filter {{ apply_direction }} acl {{ acl_number | default('') }}
+return
 {% endif %}
