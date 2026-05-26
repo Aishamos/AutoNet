@@ -17,6 +17,8 @@
     - name: 逐行下发配置命令
       ansible.netcommon.cli_command:
         command: "{{ item }}"
+        prompt: "{{ 'Continue\\? \\[Y/N\\]\\s*:' if 'clear configuration' in item else omit }}"
+        answer: "{{ 'Y' if 'clear configuration' in item else omit }}"
       loop: "{{ config_commands.split('\n') | reject('==', '') | list }}"
       register: deploy_result
 

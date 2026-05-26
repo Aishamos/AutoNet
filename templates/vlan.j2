@@ -11,13 +11,13 @@ return
 {% endif %}
 {% if port_name is defined and port_name and port_link_type is defined and port_link_type %}
 system-view
-
+clear configuration interface {{ port_name }}
 interface {{ port_name }}
 port link-type {{ port_link_type }}
 {% if port_link_type == 'access' and port_default_vlan is defined and port_default_vlan %}
 port default vlan {{ port_default_vlan }}
 {% elif port_link_type == 'trunk' and trunk_allowed_vlans is defined and trunk_allowed_vlans %}
-port trunk allow-pass vlan {{ trunk_allowed_vlans }}
+port trunk allow-pass vlan {{ trunk_allowed_vlans | replace(',', ' ') }}
 {% endif %}
 undo shutdown
 return

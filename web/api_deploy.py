@@ -59,7 +59,7 @@ TEMPLATE_FIELDS = {
         {"name": "port_name", "label": "接口名 (如 GigabitEthernet0/0/1)", "type": "text", "required": False},
         {"name": "port_link_type", "label": "接口类型", "type": "select", "options": ["access", "trunk"], "required": False},
         {"name": "port_default_vlan", "label": "Access 默认 VLAN", "type": "text", "required": False},
-        {"name": "trunk_allowed_vlans", "label": "Trunk 允许 VLAN (如 10,20,30)", "type": "text", "required": False}
+        {"name": "trunk_allowed_vlans", "label": "Trunk 允许 VLAN (如 10 20 30)", "type": "text", "required": False}
     ]
 }
 
