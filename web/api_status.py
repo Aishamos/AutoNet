@@ -33,9 +33,9 @@ def init_status_monitor(socketio):
             "devices": device_status
         }
 
-        # 【核心】通过 WebSocket 管道主动推给前端
+        # 通过 WebSocket 管道主动推给前端
         socketio.emit('status_update', current_stats)
-        print(f"📡 定时巡检同步: {online}/{len(devices)} 在线")
+        print(f" 定时巡检同步: {online}/{len(devices)} 在线")
 
     # 设定 20 秒间隔
     scheduler.add_job(func=check_job, trigger="interval", seconds=20)

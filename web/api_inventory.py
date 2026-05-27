@@ -99,9 +99,9 @@ def check_connectivity():
     
     is_ok, msg = verify_device_connection(ip, user, pwd)
     if is_ok:
-        return jsonify({"status": "success", "message": "✅ 测试通过：" + msg})
+        return jsonify({"status": "success", "message": "测试通过：" + msg})
     else:
-        return jsonify({"status": "error", "message": "❌ 测试失败：" + msg})
+        return jsonify({"status": "error", "message": "测试失败：" + msg})
 
 @inventory_bp.route('/api/export_inventory', methods=['POST'])
 def export_inventory():

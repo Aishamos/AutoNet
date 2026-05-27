@@ -138,7 +138,7 @@ def run_deploy():
             else:
                 status = "error"
                 msg = f"下发失败，请查看后端日志: {log_path}"
-            print(f"❌ 下发失败，完整日志已保存至: {log_path}")
+            print(f"下发失败，完整日志已保存至: {log_path}")
             print(full_log)
             return jsonify({"status": status, "message": msg, "results": device_results}), 500
     except Exception as e:

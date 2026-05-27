@@ -42,7 +42,7 @@ def generate_report():
         # 这个过程会依次登录设备获取 CPU/Mem，耗时较长
         res = subprocess.run([sys.executable, script_path], capture_output=True, text=True)
         if res.returncode == 0:
-            return jsonify({"status": "success", "message": "✅ 巡检报告生成完毕！", "log": res.stdout})
+            return jsonify({"status": "success", "message": "巡检报告生成完毕！", "log": res.stdout})
         else:
             return jsonify({"status": "error", "message": "报告生成失败", "log": res.stderr + "\n" + res.stdout}), 500
     except Exception as e:

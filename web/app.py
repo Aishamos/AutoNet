@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-网络自动化运维平台 - Web 终极主入口
+网络自动化运维平台 - Web 入口
 """
 import os
 import hashlib
@@ -29,11 +29,11 @@ WEB_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(WEB_DIR)
 
 # 强制切换工作目录到项目根目录
-# 这一步非常关键，确保底层 Ansible 脚本能正确找到 inventory.yml 和 vault_pass.txt
+# 确保底层 Ansible 脚本能正确找到 inventory.yml 和 vault_pass.txt
 os.chdir(PROJECT_ROOT) 
 
 # ========== 注册 API 蓝图 ==========
-# 将后端的 5 大模块 API 全部挂载到主程序上
+# 将后端的模块 API 全部挂载到主程序上
 app.register_blueprint(inventory_bp)
 app.register_blueprint(backup_bp)
 app.register_blueprint(deploy_bp)
@@ -43,7 +43,7 @@ app.register_blueprint(logs_bp)
 app.register_blueprint(status_bp)
 app.register_blueprint(drift_bp)
 
-# 我们将 socketio 实例传入，这样后台脚本发现状态变化时可以直接 emit 推送
+# 将 socketio 实例传入，这样后台脚本发现状态变化时可以直接 emit 推送
 # 只在子进程中启动定时任务，避免 reloader 导致重复执行
 if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or not app.debug:
     init_status_monitor(socketio)
@@ -92,9 +92,9 @@ def report():
     return render_template('report.html')
 
 if __name__ == '__main__':
-    print("🚀 NetAuto 实时运维服务正在启动...")
+    print(" NetAuto 实时运维服务正在启动...")
     print("巡检频率: 每 20 秒一次")
 
-    # 必须使用 socketio.run 代替原有的 app.run
+    # 必须使用 socketio.run 
     # 这样才能启动支持长连接的服务器，否则实时推送功能会失效
     socketio.run(app, host='0.0.0.0', port=5000, debug=True, use_reloader=True)

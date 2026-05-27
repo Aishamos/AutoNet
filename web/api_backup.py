@@ -41,7 +41,7 @@ def run_backup():
         # 这里会有些耗时，前端需要等待转圈圈
         res = subprocess.run([sys.executable, script_path], capture_output=True, text=True)
         if res.returncode == 0:
-            return jsonify({"status": "success", "message": "✅ 全网设备备份完成并已记录！", "log": res.stdout})
+            return jsonify({"status": "success", "message": "全网设备备份完成并已记录！", "log": res.stdout})
         return jsonify({"status": "error", "message": f"执行报错:\n{res.stderr}"}), 500
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -52,7 +52,7 @@ def manual_commit():
     script_path = os.path.join(PROJECT_ROOT, "scripts", "backup_now.py")
     try:
         res = subprocess.run([sys.executable, script_path, "--commit-only"], capture_output=True, text=True)
-        return jsonify({"status": "success", "message": "✅ Git 提交操作执行完毕", "log": res.stdout})
+        return jsonify({"status": "success", "message": "Git 提交操作执行完毕", "log": res.stdout})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -102,7 +102,7 @@ def set_cron():
     cron_content = "\n".join(filtered_lines) + "\n"
     subprocess.run(["crontab", "-"], input=cron_content, text=True)
     
-    return jsonify({"status": "success", "message": f"✅ 定时任务已更新为: {expr}"})
+    return jsonify({"status": "success", "message": f"定时任务已更新为: {expr}"})
 
 @backup_bp.route('/api/backup/cron', methods=['DELETE'])
 def delete_cron():
@@ -112,4 +112,4 @@ def delete_cron():
     
     cron_content = "\n".join(filtered_lines) + "\n"
     subprocess.run(["crontab", "-"], input=cron_content, text=True)
-    return jsonify({"status": "success", "message": "✅ 定时任务已取消"})
+    return jsonify({"status": "success", "message": "定时任务已取消"})
