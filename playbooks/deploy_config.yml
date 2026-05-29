@@ -30,4 +30,4 @@
 
     - name: 显示下发结果
       debug:
-        msg: "✅ {{ inventory_hostname }} 配置下发完成，共执行 {{ deploy_result.results | length }} 条命令"
+        msg: "{{ inventory_hostname }} 配置下发完成，共执行 {{ deploy_result.results | length }} 条命令"

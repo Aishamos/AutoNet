@@ -104,7 +104,7 @@
             const logs = (res.data || []).filter(l => l.action.includes('备份'));
             const tbody = document.getElementById('history-body');
             if(logs.length === 0) { tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-2">暂无备份历史</td></tr>'; return;}
-            tbody.innerHTML = logs.map(l => `<tr><td class="ps-4 text-muted">${l.time}</td><td>${l.action}</td><td><span class="text-${l.result.includes('成功')||l.result.includes('完成')?'success':'danger'}">${l.result}</span></td></tr>`).join('');
+            tbody.innerHTML = logs.map(l => `<tr><td class="ps-4 text-muted">${l.time}</td><td>${l.action}</td><td><span class="badge ${l.result.includes('成功')||l.result.includes('完成')?'bg-success':'bg-danger'}">${l.result}</span></td></tr>`).join('');
         });
     }
 
